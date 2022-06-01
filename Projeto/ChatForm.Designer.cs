@@ -165,6 +165,7 @@
             // 
             // RoundForm
             // 
+            this.RoundForm.BorderRadius = 8;
             this.RoundForm.TargetControl = this;
             // 
             // avatarPB
