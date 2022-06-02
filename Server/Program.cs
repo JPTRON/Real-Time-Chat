@@ -190,13 +190,11 @@ namespace Server
                         byte[] keybytes = RSA.Encrypt(ByteConverter.GetBytes(key), false);
                         byte[] ivbytes = RSA.Encrypt(ByteConverter.GetBytes(iv), false);
 
-                        Thread trd = new Thread(() => SendDataToClients(this, ProtocolSICmdType.USER_OPTION_5, keybytes));
+                        SendDataToClients(this, ProtocolSICmdType.USER_OPTION_5, keybytes);
+                        Thread.Sleep(100);
                         SendDataToClients(this, ProtocolSICmdType.USER_OPTION_6, ivbytes);
 
-                        trd.IsBackground = true;
-                        trd.Start();
-                        break;
-                    
+                        break;                 
                 }
                 
             }
@@ -241,7 +239,7 @@ namespace Server
             CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 
             cs.Write(data, 0, data.Length);
-            cs.Flush();
+            cs.FlushFinalBlock();
 
             byte[] msgbytes = ms.ToArray();
 

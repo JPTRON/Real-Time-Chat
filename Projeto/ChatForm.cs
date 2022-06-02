@@ -64,15 +64,12 @@ namespace Projeto
             byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
             networkstream.Write(packet, 0, packet.Length);
 
+            packet = protocolSI.Make(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey));
+            networkstream.Write(packet, 0, packet.Length);
+
             Thread trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
             trd.IsBackground = true;
-            trd.Start();
-
-            Thread terede = new Thread(() => SendDataThread(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey)));
-            terede.IsBackground = true;
-            terede.Start();
-
-
+            trd.Start();           
 
             usernameLbl.Text = username;
         }
@@ -394,7 +391,9 @@ namespace Projeto
             //converter a msg num pacote
             textBoxMsg.Clear();
 
-            Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, Encoding.ASCII.GetBytes(msg)));
+            byte[] msgBytes = AesEncryption(msg);
+
+            Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, msgBytes));
             trd.IsBackground = true;
             trd.Start();
         }
