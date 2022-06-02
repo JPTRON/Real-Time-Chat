@@ -28,6 +28,11 @@ namespace Projeto
         NetworkStream networkstream;
         ProtocolSI protocolSI;
         TcpClient tcpClient;
+        RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
+        UnicodeEncoding ByteConverter = new UnicodeEncoding();
+
+        private string aeskey;
+        private string aesiv;
 
         // Faz com que seja possível esconder o painel do perfil clicando fora do mesmo (https://stackoverflow.com/questions/37093409/c-sharp-windowsforms-hide-control-after-clicking-outside-of-it)
         const int WM_PARENTNOTIFY = 0x210;
@@ -54,12 +59,20 @@ namespace Projeto
             networkstream = tcpClient.GetStream();
             protocolSI = new ProtocolSI();
 
+            string publickey = RSA.ToXmlString(false);
+
             byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
             networkstream.Write(packet, 0, packet.Length);
 
             Thread trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
             trd.IsBackground = true;
             trd.Start();
+
+            Thread terede = new Thread(() => SendDataThread(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey)));
+            terede.IsBackground = true;
+            terede.Start();
+
+
 
             usernameLbl.Text = username;
         }
@@ -170,6 +183,7 @@ namespace Projeto
         {
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
+            byte[] DecryptedMsg;
 
             while (tcpClient.Connected)
             {
@@ -187,7 +201,10 @@ namespace Projeto
 
                             if (finalDataBytes.Length != dataLength) { break; }
 
-                            string msg = protocolSI.GetStringFromData();
+                            DecryptedMsg = AesDecrypt(finalDataBytes);
+
+                            string msg = Encoding.UTF8.GetString(DecryptedMsg);
+
                             SetText(msg);
 
                             finalDataBytes = new byte[] { };
@@ -214,10 +231,64 @@ namespace Projeto
                             string pod = protocolSI.GetStringFromData();
                             changeOnlineUsers(pod);
                             break;
+
+                        case ProtocolSICmdType.USER_OPTION_5:
+                            dataBytes = protocolSI.GetData();
+                            byte[] key = RSA.Decrypt(dataBytes, false);
+                            aeskey = ByteConverter.GetString(key);
+                            break;
+
+                        case ProtocolSICmdType.USER_OPTION_6:
+                            dataBytes = protocolSI.GetData();
+                            byte[] iv = RSA.Decrypt(dataBytes, false);
+                            aesiv = ByteConverter.GetString(iv);
+                            break;
                     }
                 }
                 catch (Exception) { }
             }
+        }
+
+        public byte[] AesEncryption(string data)
+        {
+            byte[] databytes = Encoding.ASCII.GetBytes(data);
+            MemoryStream ms = new MemoryStream();
+            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+
+            aes.IV = Convert.FromBase64String(aesiv);
+            aes.Key = Convert.FromBase64String(aeskey);
+
+            CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
+
+            cs.Write(databytes, 0, databytes.Length);
+            cs.FlushFinalBlock();
+
+            databytes = ms.ToArray();
+
+            cs.Close();
+            ms.Close();
+
+
+            return databytes;
+        }
+
+        public byte[] AesDecrypt(byte[] data)
+        {
+            MemoryStream ms = new MemoryStream();
+            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
+
+            aes.IV = Convert.FromBase64String(aesiv);
+            aes.Key = Convert.FromBase64String(aeskey);
+
+
+            CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
+
+            cs.Write(data, 0, data.Length);
+            cs.FlushFinalBlock();
+
+            byte[] msgbytes = ms.ToArray();
+
+            return msgbytes;
         }
 
         private void SendDataThread(ProtocolSICmdType type, byte[] data)
