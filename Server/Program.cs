@@ -126,7 +126,7 @@ namespace Server
                         dataBytes = protocolSI.GetData();
 
                         finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
-                        //Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
+                        Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
                         if (finalDataBytes.Length != dataLength) { break; }
 
                         finalDataBytes = AesDecrypt(finalDataBytes);
@@ -239,9 +239,9 @@ namespace Server
 
 
             CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
-
+            
             cs.Write(data, 0, data.Length);
-            cs.FlushFinalBlock();
+            cs.Flush();
 
             byte[] msgbytes = ms.ToArray();
 
