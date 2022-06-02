@@ -18,7 +18,7 @@ namespace Projeto
     {
         bool mouseDown;
         private Point offset;
-        //MySqlConnection myConnection = new MySqlConnection("Server=127.0.0.1;Port=3306;Database=usersts;Uid=root;Pwd=;");
+        MySqlConnection myConnection = new MySqlConnection("Server=127.0.0.1;Port=3306;Database=usersts;Uid=root;Pwd=;");
 
         public LoginForm()
         {
@@ -163,7 +163,7 @@ namespace Projeto
             }
             finally
             {
-                //myConnection.Close();
+                myConnection.Close();
             }
         }
 
