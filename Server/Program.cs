@@ -241,7 +241,7 @@ namespace Server
             CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 
             cs.Write(data, 0, data.Length);
-            cs.FlushFinalBlock();
+            cs.Flush();
 
             byte[] msgbytes = ms.ToArray();
 
