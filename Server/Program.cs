@@ -74,12 +74,6 @@ namespace Server
 
             Vars.clients.Add(this);
 
-            string message = $"{DateTime.Now} - [SERVER] Client '{username}' connected";
-            Console.WriteLine(message);
-
-            byte [] EncryptedMsg = AesEncryption(message);
-
-            CreateSendDataThreads(ProtocolSICmdType.DATA, EncryptedMsg);
             Thread.Sleep(100);
             CreateSendDataThreads(ProtocolSICmdType.USER_OPTION_4, Encoding.ASCII.GetBytes(Vars.clients.Count.ToString()));
         }
@@ -98,6 +92,7 @@ namespace Server
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
 
+
             while (protocolSI.GetCmdType() != ProtocolSICmdType.EOT)
             {
                 int bytesRead = networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
@@ -106,9 +101,11 @@ namespace Server
                 byte[] dataBytes;
                 byte[] EncryptedMsg;
 
+
                 switch (protocolSI.GetCmdType())
                 {
                     case ProtocolSICmdType.EOT:
+
                         message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' disconnected";
 
                         Console.WriteLine(message);
@@ -127,17 +124,23 @@ namespace Server
 
                         finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
                         //Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
+
                         if (finalDataBytes.Length != dataLength) { break; }
 
+                        Console.WriteLine(Convert.ToBase64String(finalDataBytes));
+
                         finalDataBytes = AesDecrypt(finalDataBytes);
+
 
                         message = $"{DateTime.Now} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
 
                         Console.WriteLine(message);
 
-                        EncryptedMsg = AesEncryption(message);
+                        byte []  NewEncryptedMsg = AesEncryption(message);
 
-                        CreateSendDataThreads(ProtocolSICmdType.DATA, EncryptedMsg);
+                        Console.WriteLine(Convert.ToBase64String(NewEncryptedMsg));
+
+                        CreateSendDataThreads(ProtocolSICmdType.DATA, NewEncryptedMsg);
 
                         finalDataBytes = new byte[] { };
                         dataLength = 0;
@@ -187,14 +190,25 @@ namespace Server
 
                         RSA.FromXmlString(this.publickey);
 
+                        
                         byte[] keybytes = RSA.Encrypt(ByteConverter.GetBytes(key), false);
                         byte[] ivbytes = RSA.Encrypt(ByteConverter.GetBytes(iv), false);
 
-                        SendDataToClients(this, ProtocolSICmdType.USER_OPTION_5, keybytes);
-                        Thread.Sleep(100);
-                        SendDataToClients(this, ProtocolSICmdType.USER_OPTION_6, ivbytes);
 
-                        break;                 
+                        SendDataToClients(this, ProtocolSICmdType.SECRET_KEY, keybytes);
+                        Thread.Sleep(100);
+                        SendDataToClients(this, ProtocolSICmdType.IV, ivbytes);
+                        Thread.Sleep(100);
+                        message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' connected";
+                        Console.WriteLine(message);
+
+                        byte[] Alert = AesEncryption(message);
+
+                        CreateSendDataThreads(ProtocolSICmdType.DATA, Alert);
+                        break;
+                        
+
+                                         
                 }
                 
             }
@@ -206,7 +220,7 @@ namespace Server
 
         public byte[] AesEncryption(string data)
         {
-            byte[] databytes = Encoding.ASCII.GetBytes(data);
+            byte[] dataB = Encoding.ASCII.GetBytes(data);
             MemoryStream ms = new MemoryStream();
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
 
@@ -215,16 +229,17 @@ namespace Server
 
             CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 
-            cs.Write(databytes, 0, databytes.Length);
+            cs.Write(dataB, 0, dataB.Length);
             cs.FlushFinalBlock();
 
-            databytes = ms.ToArray();
+            dataB = ms.ToArray();
 
+            ms.Flush();
             cs.Close();
             ms.Close();
 
 
-            return databytes;
+            return dataB;
         }
 
         public byte[] AesDecrypt(byte[] data)
@@ -243,11 +258,19 @@ namespace Server
 
             byte[] msgbytes = ms.ToArray();
 
+            ms.Flush();
+            cs.Close();
+            ms.Close();
+
             return msgbytes;
         }
 
         public void CreateSendDataThreads(ProtocolSICmdType type, byte[] data)
         {
+            
+            byte[] tyaws = (data);
+            string ff = Convert.ToBase64String(tyaws);
+
             foreach (ClientHandler clientHandler in Vars.clients)
             {
                 Thread trd = new Thread(() => SendDataToClients(clientHandler, type, data));

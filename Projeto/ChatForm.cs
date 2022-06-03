@@ -196,7 +196,7 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            if (finalDataBytes.Length != dataLength) { break; }
+                            //if (finalDataBytes.Length != dataLength) { break; }
 
                             DecryptedMsg = AesDecrypt(finalDataBytes);
 
@@ -229,17 +229,21 @@ namespace Projeto
                             changeOnlineUsers(pod);
                             break;
 
-                        case ProtocolSICmdType.USER_OPTION_5:
+                        case ProtocolSICmdType.SECRET_KEY:
                             dataBytes = protocolSI.GetData();
-                            byte[] key = RSA.Decrypt(dataBytes, false);
-                            aeskey = ByteConverter.GetString(key);
-                            break;
+                             byte[] key = RSA.Decrypt(dataBytes, false);
+                             aeskey = ByteConverter.GetString(key); 
+                            Thread.Sleep(100);
+                             break;
 
-                        case ProtocolSICmdType.USER_OPTION_6:
+                        case ProtocolSICmdType.IV:
                             dataBytes = protocolSI.GetData();
                             byte[] iv = RSA.Decrypt(dataBytes, false);
                             aesiv = ByteConverter.GetString(iv);
                             break;
+
+
+                        
                     }
                 }
                 catch (Exception) { }
@@ -248,7 +252,7 @@ namespace Projeto
 
         public byte[] AesEncryption(string data)
         {
-            byte[] databytes = Encoding.ASCII.GetBytes(data);
+            byte[] dataB = Encoding.ASCII.GetBytes(data);
             MemoryStream ms = new MemoryStream();
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
 
@@ -257,16 +261,17 @@ namespace Projeto
 
             CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 
-            cs.Write(databytes, 0, databytes.Length);
+            cs.Write(dataB, 0, dataB.Length);
             cs.FlushFinalBlock();
 
-            databytes = ms.ToArray();
+            dataB = ms.ToArray();
 
+            ms.Flush();
             cs.Close();
             ms.Close();
 
 
-            return databytes;
+            return dataB;
         }
 
         public byte[] AesDecrypt(byte[] data)
@@ -284,6 +289,10 @@ namespace Projeto
             cs.FlushFinalBlock();
 
             byte[] msgbytes = ms.ToArray();
+
+            ms.Flush();
+            cs.Close();
+            ms.Close();
 
             return msgbytes;
         }
