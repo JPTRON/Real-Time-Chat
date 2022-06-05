@@ -1,15 +1,20 @@
-﻿using System;
+﻿using EI.SI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
-using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Projeto
@@ -18,11 +23,35 @@ namespace Projeto
     {
         bool mouseDown;
         private Point offset;
+
+        private const int PORT = 10000;
+        NetworkStream networkstream;
+        ProtocolSI protocolSI;
+
+        UnicodeEncoding ByteConverter = new UnicodeEncoding();
+        RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
         //MySqlConnection myConnection = new MySqlConnection("Server=127.0.0.1;Port=3306;Database=usersts;Uid=root;Pwd=;");
+
+        private string key;
+        private string iv;
 
         public LoginForm()
         {
             InitializeComponent();
+
+            IPEndPoint endpoint = new IPEndPoint(IPAddress.Loopback, PORT);
+            sharedClient.tcpClient.Connect(endpoint);
+            networkstream = sharedClient.tcpClient.GetStream();
+            protocolSI = new ProtocolSI();
+
+            string publickey = RSA.ToXmlString(false);
+
+            byte[] packet = protocolSI.Make(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey));
+            networkstream.Write(packet, 0, packet.Length);
+
+            Thread trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
+            trd.IsBackground = true;
+            trd.Start();
         }
 
         private void topBar_MouseDown(object sender, MouseEventArgs e)
@@ -82,8 +111,8 @@ namespace Projeto
                 if (username.Trim() == "" || password.Trim() == "") { throw new Exception("Preencha todos os campos!"); }
                 if (!Regex.IsMatch(username, @"^[a-zA-Z0-9]+$")) { throw new Exception("Insira apenas letras e números no campo do username!"); }
 
-                username = username.Trim();
-
+                username = username.Trim();              
+                          
                 /*myConnection.Open();
 
                 //Declara uma query que vai procurar o user com o username da textbox e executa
@@ -98,8 +127,8 @@ namespace Projeto
 
                     if (hashedPassword == reader["password"].ToString())
                     {*/
-                        //Abre a sala de chat
-                        ChatForm chat = new ChatForm(username);
+                //Abre a sala de chat
+                        ChatForm chat = new ChatForm(username, iv, key);
                         chat.Show();
                         this.Close(); /*                   
                     }
@@ -115,7 +144,7 @@ namespace Projeto
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Erro");
+                MessageBox.Show(err.ToString(), "Erro");
             }
             finally
             {
@@ -152,7 +181,7 @@ namespace Projeto
                 {
                     cmd = new MySqlCommand($"INSERT INTO users (username, password) VALUES( '{username}', '{HashPassword(password)}');", myConnection);
                 */
-                    ChatForm chat = new ChatForm(username);
+                    ChatForm chat = new ChatForm(username, iv, key);
                     chat.Show();
                     this.Close();
                 //}
@@ -182,6 +211,38 @@ namespace Projeto
             }
 
             return builder.ToString();
+        }
+
+        private void ReceiveMessagesThread()
+        {
+            while(sharedClient.tcpClient.Connected)
+            {
+                try
+                {
+                    networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                    byte[] dataBytes;
+                    
+                    switch (protocolSI.GetCmdType())
+                    {
+                        case ProtocolSICmdType.SECRET_KEY:
+                            dataBytes = protocolSI.GetData();
+                            byte[] keyBytes = RSA.Decrypt(dataBytes, false);
+                            key = ByteConverter.GetString(keyBytes);
+                            Thread.Sleep(100);
+                            break;
+
+                        case ProtocolSICmdType.IV:
+                            dataBytes = protocolSI.GetData();
+                            byte[] ivBytes = RSA.Decrypt(dataBytes, false);
+                            iv = ByteConverter.GetString(ivBytes);
+                            break;
+                    }
+                }
+                catch (Exception err)
+                {
+                    MessageBox.Show(err.ToString(), "Erro");
+                }
+            }
         }
     }
 }

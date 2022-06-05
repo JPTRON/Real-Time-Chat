@@ -27,9 +27,10 @@ namespace Projeto
         private const int PORT = 10000;
         NetworkStream networkstream;
         ProtocolSI protocolSI;
-        TcpClient tcpClient;
+
         RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
         UnicodeEncoding ByteConverter = new UnicodeEncoding();
+        EncrypterHandler EH = new EncrypterHandler();
 
         private string aeskey;
         private string aesiv;
@@ -49,22 +50,17 @@ namespace Projeto
         }
 
 
-        public ChatForm(string username)
+        public ChatForm(string username, string iv, string key)
         {
             InitializeComponent();
 
-            IPEndPoint endpoint = new IPEndPoint(IPAddress.Loopback, PORT);
-            tcpClient = new TcpClient();
-            tcpClient.Connect(endpoint);
-            networkstream = tcpClient.GetStream();
+            aeskey = key;
+            aesiv = iv;
+
+            networkstream = sharedClient.tcpClient.GetStream();
             protocolSI = new ProtocolSI();
 
-            string publickey = RSA.ToXmlString(false);
-
-            byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, username);
-            networkstream.Write(packet, 0, packet.Length);
-
-            packet = protocolSI.Make(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey));
+            byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_4, username);
             networkstream.Write(packet, 0, packet.Length);
 
             Thread trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
@@ -83,7 +79,7 @@ namespace Projeto
             networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
             networkstream.Close();
-            tcpClient.Close();
+            sharedClient.tcpClient.Close();
         }
 
         private void sendFileBtn_Click(object sender, EventArgs e)
@@ -182,23 +178,23 @@ namespace Projeto
             int dataLength = 0;
             byte[] DecryptedMsg;
 
-            while (tcpClient.Connected)
+            while(sharedClient.tcpClient.Connected)
             {
                 try
                 {
                     networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                     byte[] dataBytes;
-
+                    string a = protocolSI.GetCmdType().ToString();
                     switch (protocolSI.GetCmdType())
                     {
                         case ProtocolSICmdType.DATA:
                             dataBytes = protocolSI.GetData();
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
+                            //MessageBox.Show($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length == dataLength}");
+                            //if (finalDataBytes.Length != dataLength) { break; }
 
-                            if (finalDataBytes.Length != dataLength) { break; }
-
-                            DecryptedMsg = AesDecrypt(finalDataBytes);
+                            DecryptedMsg = EH.decrypt(finalDataBytes, aesiv, aeskey);
 
                             string msg = Encoding.UTF8.GetString(DecryptedMsg);
 
@@ -213,7 +209,7 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            if (finalDataBytes.Length != dataLength) { break; }
+                            //if (finalDataBytes.Length != dataLength) { break; }
 
                             HandleFileMessage(finalDataBytes);
                             finalDataBytes = new byte[] { };
@@ -222,70 +218,17 @@ namespace Projeto
                        
                         case ProtocolSICmdType.USER_OPTION_3:
                             dataLength = Int32.Parse(protocolSI.GetStringFromData());
+                            MessageBox.Show(dataLength.ToString());
                             break;
 
                         case ProtocolSICmdType.USER_OPTION_4:
-                            string pod = protocolSI.GetStringFromData();
-                            changeOnlineUsers(pod);
-                            break;
-
-                        case ProtocolSICmdType.USER_OPTION_5:
-                            dataBytes = protocolSI.GetData();
-                            byte[] key = RSA.Decrypt(dataBytes, false);
-                            aeskey = ByteConverter.GetString(key);
-                            break;
-
-                        case ProtocolSICmdType.USER_OPTION_6:
-                            dataBytes = protocolSI.GetData();
-                            byte[] iv = RSA.Decrypt(dataBytes, false);
-                            aesiv = ByteConverter.GetString(iv);
-                            break;
+                            string usersCount = protocolSI.GetStringFromData();
+                            changeOnlineUsers(usersCount);
+                            break;                     
                     }
                 }
                 catch (Exception) { }
             }
-        }
-
-        public byte[] AesEncryption(string data)
-        {
-            byte[] databytes = Encoding.ASCII.GetBytes(data);
-            MemoryStream ms = new MemoryStream();
-            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
-
-            aes.IV = Convert.FromBase64String(aesiv);
-            aes.Key = Convert.FromBase64String(aeskey);
-
-            CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
-
-            cs.Write(databytes, 0, databytes.Length);
-            cs.FlushFinalBlock();
-
-            databytes = ms.ToArray();
-
-            cs.Close();
-            ms.Close();
-
-
-            return databytes;
-        }
-
-        public byte[] AesDecrypt(byte[] data)
-        {
-            MemoryStream ms = new MemoryStream();
-            AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
-
-            aes.IV = Convert.FromBase64String(aesiv);
-            aes.Key = Convert.FromBase64String(aeskey);
-
-
-            CryptoStream cs = new CryptoStream(ms, aes.CreateDecryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
-
-            cs.Write(data, 0, data.Length);
-            cs.FlushFinalBlock();
-
-            byte[] msgbytes = ms.ToArray();
-
-            return msgbytes;
         }
 
         private void SendDataThread(ProtocolSICmdType type, byte[] data)
@@ -391,7 +334,7 @@ namespace Projeto
             //converter a msg num pacote
             textBoxMsg.Clear();
 
-            byte[] msgBytes = AesEncryption(msg);
+            byte[] msgBytes = EH.encrypt(msg, aesiv, aeskey);
 
             Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, msgBytes));
             trd.IsBackground = true;
