@@ -176,7 +176,7 @@ namespace Projeto
             catch (Exception) { }
         }
 
-        private void ReceiveMessagesThread()
+        private async void ReceiveMessagesThread()
         {
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
@@ -196,7 +196,7 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            //if (finalDataBytes.Length != dataLength) { break; }
+                            if (finalDataBytes.Length != dataLength) { break; }
 
                             DecryptedMsg = AesDecrypt(finalDataBytes);
 
@@ -233,7 +233,7 @@ namespace Projeto
                             dataBytes = protocolSI.GetData();
                              byte[] key = RSA.Decrypt(dataBytes, false);
                              aeskey = ByteConverter.GetString(key); 
-                            Thread.Sleep(100);
+
                              break;
 
                         case ProtocolSICmdType.IV:

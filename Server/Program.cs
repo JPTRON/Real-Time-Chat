@@ -84,7 +84,7 @@ namespace Server
             thread.Start();
         }
 
-        public void threadhandler()
+        public async void threadhandler()
         {
             UnicodeEncoding ByteConverter = new UnicodeEncoding();
             NetworkStream networkStream = this.client.GetStream();
@@ -196,9 +196,9 @@ namespace Server
 
 
                         SendDataToClients(this, ProtocolSICmdType.SECRET_KEY, keybytes);
-                        Thread.Sleep(100);
+                        await Task.Delay(500);
                         SendDataToClients(this, ProtocolSICmdType.IV, ivbytes);
-                        Thread.Sleep(100);
+                        await Task.Delay(500);
                         message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' connected";
                         Console.WriteLine(message);
 
