@@ -96,7 +96,7 @@ namespace Server
             while (protocolSI.GetCmdType() != ProtocolSICmdType.EOT)
             {
                 int bytesRead = networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-                byte[] ack;
+                
                 string message;
                 byte[] dataBytes;
                 byte[] EncryptedMsg;
@@ -196,9 +196,19 @@ namespace Server
 
 
                         SendDataToClients(this, ProtocolSICmdType.SECRET_KEY, keybytes);
-                        await Task.Delay(500);
+                        
+                        while(protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                        {
+                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                        }
+
                         SendDataToClients(this, ProtocolSICmdType.IV, ivbytes);
-                        await Task.Delay(500);
+
+                        while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                        {
+                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                        }
+
                         message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' connected";
                         Console.WriteLine(message);
 

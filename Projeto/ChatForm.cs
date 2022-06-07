@@ -181,6 +181,7 @@ namespace Projeto
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
             byte[] DecryptedMsg;
+            byte[] ack = protocolSI.Make(ProtocolSICmdType.ACK);
 
             while (tcpClient.Connected)
             {
@@ -196,7 +197,7 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            if (finalDataBytes.Length != dataLength) { break; }
+                            //if (finalDataBytes.Length != dataLength) { break; }
 
                             DecryptedMsg = AesDecrypt(finalDataBytes);
 
@@ -213,8 +214,8 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            if (finalDataBytes.Length != dataLength) { break; }
-
+                            //if (finalDataBytes.Length != dataLength) { break; }
+                            
                             HandleFileMessage(finalDataBytes);
                             finalDataBytes = new byte[] { };
                             dataLength = 0;
@@ -232,7 +233,10 @@ namespace Projeto
                         case ProtocolSICmdType.SECRET_KEY:
                             dataBytes = protocolSI.GetData();
                              byte[] key = RSA.Decrypt(dataBytes, false);
-                             aeskey = ByteConverter.GetString(key); 
+                             aeskey = ByteConverter.GetString(key);
+
+                            networkstream.Write(ack, 0, ack.Length);
+
 
                              break;
 
@@ -240,6 +244,8 @@ namespace Projeto
                             dataBytes = protocolSI.GetData();
                             byte[] iv = RSA.Decrypt(dataBytes, false);
                             aesiv = ByteConverter.GetString(iv);
+
+                            networkstream.Write(ack, 0, ack.Length);
                             break;
 
 
