@@ -176,7 +176,7 @@ namespace Projeto
             catch (Exception) { }
         }
 
-        private async void ReceiveMessagesThread()
+        private void ReceiveMessagesThread()
         {
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
@@ -254,6 +254,19 @@ namespace Projeto
                 }
                 catch (Exception) { }
             }
+        }
+
+        public byte[] PackMessage(byte [] msg, byte[] hash)
+        {
+            BinaryFormatter bf = new BinaryFormatter();
+            ArrayM arrayM = new ArrayM(msg, hash);
+
+            using (var ms = new MemoryStream())
+            {
+                bf.Serialize(ms, arrayM);
+                return ms.ToArray();
+            }
+
         }
 
         public byte[] AesEncryption(string data)
@@ -457,6 +470,25 @@ namespace Projeto
         public override string ToString()
         {
             return this.message;
+        }
+    }
+
+    class ArrayM
+    {
+        
+        public byte[] message;
+        public byte[] signatureHash;
+
+        public ArrayM(byte [] message, byte[] signarturaHash)
+        {
+            this.message = message;
+            this.signatureHash = signarturaHash;
+
+        }
+
+        public override string ToString()
+        {
+            return message.ToString();
         }
     }
 }
