@@ -15,6 +15,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Security.Cryptography;
 using System.Runtime.InteropServices;
+using System.Text.Json;
 
 namespace Projeto
 {
@@ -100,9 +101,6 @@ namespace Projeto
                 var fileBytes = File.ReadAllBytes(filePath);
 
                 packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, fileName);
-                networkstream.Write(packet, 0, packet.Length);
-
-                packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, fileBytes.Length);
                 networkstream.Write(packet, 0, packet.Length);
 
                 Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.USER_OPTION_2 ,fileBytes));
@@ -256,22 +254,20 @@ namespace Projeto
             }
         }
 
-        public byte[] PackMessage(byte [] msg, byte[] hash)
+        public byte[] PackMessage(byte [] msg)
         {
-            BinaryFormatter bf = new BinaryFormatter();
-            ArrayM arrayM = new ArrayM(msg, hash);
+            byte[] signature = SignData(msg);
+            byte[] encMsg = AesEncryption(msg);
 
-            using (var ms = new MemoryStream())
-            {
-                bf.Serialize(ms, arrayM);
-                return ms.ToArray();
-            }
+            ArrayM arrayM = new ArrayM() { message = encMsg, signatureHash = signature};
+            string mensagem = System.Text.Json.JsonSerializer.Serialize(arrayM);
+
+            return Encoding.UTF8.GetBytes(mensagem);
 
         }
 
-        public byte[] AesEncryption(string data)
+        public byte[] AesEncryption(byte[] data)
         {
-            byte[] dataB = Encoding.ASCII.GetBytes(data);
             MemoryStream ms = new MemoryStream();
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
 
@@ -280,17 +276,17 @@ namespace Projeto
 
             CryptoStream cs = new CryptoStream(ms, aes.CreateEncryptor(aes.Key, aes.IV), CryptoStreamMode.Write);
 
-            cs.Write(dataB, 0, dataB.Length);
+            cs.Write(data, 0, data.Length);
             cs.FlushFinalBlock();
 
-            dataB = ms.ToArray();
+            data = ms.ToArray();
 
             ms.Flush();
             cs.Close();
             ms.Close();
 
 
-            return dataB;
+            return data;
         }
 
         public byte[] AesDecrypt(byte[] data)
@@ -318,27 +314,28 @@ namespace Projeto
 
         private void SendDataThread(ProtocolSICmdType type, byte[] data)
         {
+            byte[] mensagem = PackMessage(data);
             byte[] packet;
 
-            packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, data.Length);
+            packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, mensagem.Length);
             networkstream.Write(packet, 0, packet.Length);
 
             do
             {
                 if (data.Length >= 1400)
                 {
-                    packet = protocolSI.Make(type, data.Take(1400).ToArray());
+                    packet = protocolSI.Make(type, mensagem.Take(1400).ToArray());
                 }
                 else
                 {
-                    packet = protocolSI.Make(type, data);
+                    packet = protocolSI.Make(type, mensagem);
                 }
 
-                data = data.Skip(1400).ToArray();
+                mensagem = mensagem.Skip(1400).ToArray();
 
                 networkstream.Write(packet, 0, packet.Length);
             }
-            while (data.Length > 0);
+            while (mensagem.Length > 0);
         }
 
         private void HandleFileMessage(byte[] file)
@@ -419,11 +416,20 @@ namespace Projeto
             //converter a msg num pacote
             textBoxMsg.Clear();
 
-            byte[] msgBytes = AesEncryption(msg);
+            byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
-            Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, msgBytes));
+            Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, bytes));
             trd.IsBackground = true;
             trd.Start();
+        }
+
+        private byte[] SignData(byte[] msg)
+        {
+            using (SHA1 sha1 = SHA1.Create())
+            {
+                byte[] signature = RSA.SignData(msg, sha1);
+                return signature;
+            }
         }
 
         private void textBoxMsg_KeyDown(object sender, KeyEventArgs e)
@@ -475,20 +481,7 @@ namespace Projeto
 
     class ArrayM
     {
-        
-        public byte[] message;
-        public byte[] signatureHash;
-
-        public ArrayM(byte [] message, byte[] signarturaHash)
-        {
-            this.message = message;
-            this.signatureHash = signarturaHash;
-
-        }
-
-        public override string ToString()
-        {
-            return message.ToString();
-        }
+        public byte[] message { get; set; }
+        public byte[] signatureHash { get; set; }
     }
 }

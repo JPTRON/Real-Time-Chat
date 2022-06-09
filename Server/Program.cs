@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Security.Cryptography;
+using System.Text.Json;
 
 namespace Server
 {
@@ -84,7 +85,7 @@ namespace Server
             thread.Start();
         }
 
-        public async void threadhandler()
+        public void threadhandler()
         {
             UnicodeEncoding ByteConverter = new UnicodeEncoding();
             NetworkStream networkStream = this.client.GetStream();
@@ -120,30 +121,33 @@ namespace Server
                         break;
 
                     case ProtocolSICmdType.DATA:
+
                         dataBytes = protocolSI.GetData();
+                        
+                        if (dataBytes.Length != dataLength) { break; }
 
-                        finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
-                        //Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
+                        ArrayM mensagem = System.Text.Json.JsonSerializer.Deserialize<ArrayM>(dataBytes);
+                        
+                        finalDataBytes = AesDecrypt(mensagem.message);
 
-                        if (finalDataBytes.Length != dataLength) { break; }
+                        if (VerifyData(finalDataBytes, mensagem.signatureHash))
+                        {
 
-                        Console.WriteLine(Convert.ToBase64String(finalDataBytes));
+                            Console.WriteLine(Convert.ToBase64String(finalDataBytes));
+                            
+                            message = $"{DateTime.Now} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
 
-                        finalDataBytes = AesDecrypt(finalDataBytes);
+                            Console.WriteLine(message);
 
+                            byte[] NewEncryptedMsg = AesEncryption(message);
 
-                        message = $"{DateTime.Now} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
+                            Console.WriteLine(Convert.ToBase64String(NewEncryptedMsg));
 
-                        Console.WriteLine(message);
+                            CreateSendDataThreads(ProtocolSICmdType.DATA, NewEncryptedMsg);
 
-                        byte []  NewEncryptedMsg = AesEncryption(message);
-
-                        Console.WriteLine(Convert.ToBase64String(NewEncryptedMsg));
-
-                        CreateSendDataThreads(ProtocolSICmdType.DATA, NewEncryptedMsg);
-
-                        finalDataBytes = new byte[] { };
-                        dataLength = 0;
+                            finalDataBytes = new byte[] { };
+                            dataLength = 0;
+                        }
                         break;
 
                     case ProtocolSICmdType.USER_OPTION_1:
@@ -151,33 +155,43 @@ namespace Server
                         break;
 
                     case ProtocolSICmdType.USER_OPTION_2:
+                        
                         dataBytes = protocolSI.GetData();
                         
                         finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
-                        //Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
+
                         if (finalDataBytes.Length != dataLength) { break; }
 
-                        List<byte[]> file = new List<byte[]>();
+                        ArrayM fileMsg = System.Text.Json.JsonSerializer.Deserialize<ArrayM>(finalDataBytes);
 
-                        message = $"{DateTime.Now} - [FILE] Client {clientID}: {fileName}";
-                        Console.WriteLine(message);
+                        finalDataBytes = AesDecrypt(fileMsg.message);
 
-                        BinaryFormatter formatter = new BinaryFormatter();
-                        MemoryStream ms = new MemoryStream();
+                        bool teste = VerifyData(finalDataBytes, fileMsg.signatureHash);
 
-                        file.Add(Encoding.ASCII.GetBytes(fileName));
-                        file.Add(finalDataBytes);
-                        file.Add(Encoding.ASCII.GetBytes(message));
-                        formatter.Serialize(ms, file);
-                        ms.Position = 0;
-                        //File.WriteAllBytes($"./{fileName}", finalDataBytes);
+                        if (VerifyData(finalDataBytes, fileMsg.signatureHash))
+                        {
+                            List<byte[]> file = new List<byte[]>();
 
-                        CreateSendDataThreads(ProtocolSICmdType.USER_OPTION_2, ms.ToArray());
+                            message = $"{DateTime.Now} - [FILE] Client {clientID}: {fileName}";
+                            Console.WriteLine(message);
 
-                        ms.Flush();
-                        ms.Close();
-                        finalDataBytes = new byte[] { };
-                        dataLength = 0;
+                            BinaryFormatter formatter = new BinaryFormatter();
+                            MemoryStream ms = new MemoryStream();
+
+                            file.Add(Encoding.ASCII.GetBytes(fileName));
+                            file.Add(finalDataBytes);
+                            file.Add(Encoding.ASCII.GetBytes(message));
+                            formatter.Serialize(ms, file);
+                            ms.Position = 0;
+                            //File.WriteAllBytes($"./{fileName}", finalDataBytes);
+
+                            CreateSendDataThreads(ProtocolSICmdType.USER_OPTION_2, ms.ToArray());
+
+                            ms.Flush();
+                            ms.Close();
+                            finalDataBytes = new byte[] { };
+                            dataLength = 0;
+                        }
                         break;
 
                     case ProtocolSICmdType.USER_OPTION_3:
@@ -216,9 +230,6 @@ namespace Server
 
                         CreateSendDataThreads(ProtocolSICmdType.DATA, Alert);
                         break;
-                        
-
-                                         
                 }
                 
             }
@@ -226,6 +237,14 @@ namespace Server
             Vars.clientCounter++;
             networkStream.Close();
             client.Close();
+        }
+        private bool VerifyData(byte[] msg, byte[] signature)
+        {
+            using (SHA1 sha1 = SHA1.Create())
+            {
+                bool verify = RSA.VerifyData(msg, sha1, signature);
+                return verify;
+            }
         }
 
         public byte[] AesEncryption(string data)
@@ -320,5 +339,10 @@ namespace Server
             }
             while (data.Length > 0);
         }
+    }
+    class ArrayM
+    {
+        public byte[] message { get; set; }
+        public byte[] signatureHash { get; set; }
     }
 }
