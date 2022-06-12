@@ -30,8 +30,9 @@ namespace Server
             AesCryptoServiceProvider aes = new AesCryptoServiceProvider();
             string aesKey = Convert.ToBase64String(aes.Key);
             string aesIV = Convert.ToBase64String(aes.IV);
-            ProtocolSI protocolSI = new ProtocolSI();
 
+            ProtocolSI protocolSI = new ProtocolSI();
+            s s = new s();
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, PORT);
             
             TcpListener tcplistener = new TcpListener(endPoint);
@@ -47,14 +48,58 @@ namespace Server
                 NetworkStream networkStream = client.GetStream();
                 networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
-                Vars.clientCounter++;
+                if(protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_4)
+                {
+                    s.login(protocolSI.GetData(), networkStream);
+                }
+                else if(protocolSI.GetCmdType() == ProtocolSICmdType.USER_OPTION_5)
+                {
+                    s.signup(protocolSI.GetData(), networkStream);
+                }
+                else
+                {
+                    Vars.clientCounter++;
 
-                ClientHandler clientHandler = new ClientHandler(client, protocolSI.GetStringFromData(), aesKey, aesIV);
-                clientHandler.Handle();
+                    ClientHandler clientHandler = new ClientHandler(client, protocolSI.GetStringFromData(), aesKey, aesIV);
+                    clientHandler.Handle();
+                } 
             }
         }
     }
 
+    class s
+    {
+        BDHandler BD = new BDHandler();
+        ProtocolSI protocolSI = new ProtocolSI();
+        Credenciais credenciais;
+
+        public void login(byte[] dataBytes, NetworkStream clientNetworkStream)
+        {
+            credenciais = System.Text.Json.JsonSerializer.Deserialize<Credenciais>(dataBytes);
+
+            string message = BD.CompareCredentials(credenciais.username, credenciais.passwordHash);
+
+            byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, Encoding.ASCII.GetBytes(message));
+            clientNetworkStream.Write(packet, 0, packet.Length);
+
+            packet = protocolSI.Make(ProtocolSICmdType.ACK);
+            clientNetworkStream.Write(packet, 0, packet.Length);
+        }
+
+        public void signup(byte[] dataBytes, NetworkStream clientNetworkStream)
+        {
+            credenciais = System.Text.Json.JsonSerializer.Deserialize<Credenciais>(dataBytes);
+
+            string message = BD.RegisterUser(credenciais.username, credenciais.passwordHash);
+
+            byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, Encoding.ASCII.GetBytes(message));
+            clientNetworkStream.Write(packet, 0, packet.Length);
+
+            packet = protocolSI.Make(ProtocolSICmdType.ACK);
+            clientNetworkStream.Write(packet, 0, packet.Length);
+        }
+    }
+    
     // criar clients
     class ClientHandler
     {
@@ -101,7 +146,8 @@ namespace Server
                 string message;
                 byte[] dataBytes;
                 byte[] EncryptedMsg;
-
+                Credenciais credenciais;
+                BDHandler BD = new BDHandler();
 
                 switch (protocolSI.GetCmdType())
                 {
@@ -230,8 +276,7 @@ namespace Server
 
                         CreateSendDataThreads(ProtocolSICmdType.DATA, Alert);
                         break;
-                }
-                
+                }            
             }
 
             Vars.clientCounter++;
@@ -340,9 +385,16 @@ namespace Server
             while (data.Length > 0);
         }
     }
+
     class ArrayM
     {
         public byte[] message { get; set; }
         public byte[] signatureHash { get; set; }
+    }
+
+    class Credenciais
+    {
+        public string username { get; set; }
+        public string passwordHash { get; set; }
     }
 }

@@ -1,15 +1,20 @@
-﻿using System;
+﻿using EI.SI;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.IO;
 using System.Linq;
 using System.Text;
+using System.Net;
+using System.Net.Sockets;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using MySql.Data.MySqlClient;
 using System.Security.Cryptography;
-using System.IO;
+using System.Runtime.InteropServices;
 using System.Text.RegularExpressions;
 
 namespace Projeto
@@ -18,7 +23,13 @@ namespace Projeto
     {
         bool mouseDown;
         private Point offset;
-        //MySqlConnection myConnection = new MySqlConnection("Server=127.0.0.1;Port=3306;Database=usersts;Uid=root;Pwd=;");
+
+        private const int PORT = 10000;
+        NetworkStream networkstream;
+        ProtocolSI protocolSI = new ProtocolSI();
+        TcpClient tcpClient;
+        Thread trd = null;
+        string username;
 
         public LoginForm()
         {
@@ -75,95 +86,124 @@ namespace Projeto
         {
             try
             {
-                string username = usernameSigninTxt.Text;
+                username = usernameSigninTxt.Text;
                 string password = passwordSigninTtx.Text;
 
                 //Verifica se os campos das textbox estão preenchidos
                 if (username.Trim() == "" || password.Trim() == "") { throw new Exception("Preencha todos os campos!"); }
+                if (username.Any(Char.IsWhiteSpace)) { throw new Exception("Preencha o username sem espaços!"); }
                 if (!Regex.IsMatch(username, @"^[a-zA-Z0-9]+$")) { throw new Exception("Insira apenas letras e números no campo do username!"); }
-
+                
                 username = username.Trim();
 
-                /*myConnection.Open();
+                Credenciais credenciaisObj = new Credenciais();
+                credenciaisObj.username = username;
+                credenciaisObj.passwordHash = HashPassword(password);
 
-                //Declara uma query que vai procurar o user com o username da textbox e executa
-                MySqlCommand cmd = new MySqlCommand($"SELECT username, password FROM users where username LIKE '{username}'", myConnection);
-                MySqlDataReader reader = cmd.ExecuteReader();            
+                string credenciais = System.Text.Json.JsonSerializer.Serialize(credenciaisObj);
 
-                //Verifica se o SELECT retorna algum dado
-                if(reader.Read())
-                {                
-                    //Converte a password da textbox para um hash e compara à password na base de dados 
-                    string hashedPassword = HashPassword(password);
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Loopback, PORT);
+                tcpClient = new TcpClient();
+                tcpClient.Connect(endpoint);
+                networkstream = tcpClient.GetStream();
+                byte[] dataBytes;
 
-                    if (hashedPassword == reader["password"].ToString())
-                    {*/
-                        //Abre a sala de chat
-                        ChatForm chat = new ChatForm(username);
-                        chat.Show();
-                        this.Close(); /*                   
-                    }
-                    else
-                    {
-                        throw new Exception("Username ou Password incorretos!");
-                    }
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_4, credenciais);
+                networkstream.Write(packet, 0, packet.Length);
+
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.DATA)
+                {
+                    networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+
+                dataBytes = protocolSI.GetData();
+                string message = ASCIIEncoding.ASCII.GetString(dataBytes);
+
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                {
+                    networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+
+                networkstream.Close();
+                tcpClient.Close();
+
+                if (message == "true")
+                {
+                    ChatForm chat = new ChatForm(username);
+                    chat.Show();
+                    this.Close();
                 }
                 else
                 {
-                    throw new Exception("Username ou Password incorretos!");
-                }*/
+                    throw new Exception(message);
+                }
+
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message, "Erro");
             }
-            finally
-            {
-                //myConnection.Close();
-            }
-
         }
 
         private void btnSignUp_Click(object sender, EventArgs e)
         {
             try
             {
-                string username = txtUnameSignUp.Text;
+                username = txtUnameSignUp.Text;
                 string password = txtPwdSignUp.Text;
 
                 //Verifica se os campos das textbox estão preenchidos
                 if (username.Trim() == "" || password.Trim() == "") { throw new Exception("Preencha todos os campos!"); }
+                if (username.Any(Char.IsWhiteSpace)) { throw new Exception("Preencha o username sem espaços!"); }
                 if (!Regex.IsMatch(username, @"^[a-zA-Z0-9]+$")) { throw new Exception("Insira apenas letras e números no campo do username!"); }
                 
                 username = username.Trim();
 
-                /*myConnection.Open();
+                Credenciais credenciaisObj = new Credenciais();
+                credenciaisObj.username = username;
+                credenciaisObj.passwordHash = HashPassword(password);
 
-                //Declara uma query que vai procurar o user com o username da textbox e executa
-                MySqlCommand cmd = new MySqlCommand($"SELECT username FROM users where username LIKE '{username}'", myConnection);
-                MySqlDataReader reader = cmd.ExecuteReader();
+                string credenciais = System.Text.Json.JsonSerializer.Serialize(credenciaisObj);
 
-                //Verifica se o SELECT retorna algum dado
-                if(reader.Read())
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Loopback, PORT);
+                tcpClient = new TcpClient();
+                tcpClient.Connect(endpoint);
+                networkstream = tcpClient.GetStream();
+                byte[] dataBytes;
+
+                byte[] packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_5, credenciais);
+                networkstream.Write(packet, 0, packet.Length);
+
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.DATA)
                 {
-                    throw new Exception("Username já existente!");
+                    networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                 }
-                else
+
+                dataBytes = protocolSI.GetData();
+                string message = ASCIIEncoding.ASCII.GetString(dataBytes);
+
+                while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
                 {
-                    cmd = new MySqlCommand($"INSERT INTO users (username, password) VALUES( '{username}', '{HashPassword(password)}');", myConnection);
-                */
+                    networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                }
+
+                networkstream.Close();
+                tcpClient.Close();
+
+                if (message == "true")
+                {
                     ChatForm chat = new ChatForm(username);
                     chat.Show();
                     this.Close();
-                //}
+                }
+                else
+                {
+                    throw new Exception(message);
+                }                     
             }
             catch (Exception err)
             {
                 MessageBox.Show(err.Message, "Erro");
-            }
-            finally
-            {
-                //myConnection.Close();
             }
         }
 
@@ -182,6 +222,12 @@ namespace Projeto
             }
 
             return builder.ToString();
+        }
+
+        class Credenciais
+        {
+            public string username { get; set; }
+            public string passwordHash { get; set; }
         }
     }
 }
