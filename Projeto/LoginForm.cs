@@ -229,5 +229,15 @@ namespace Projeto
             public string username { get; set; }
             public string passwordHash { get; set; }
         }
+
+        private void passwordSigninTtx_IconRightClick(object sender, EventArgs e)
+        {
+            passwordSigninTtx.UseSystemPasswordChar = !passwordSigninTtx.UseSystemPasswordChar;
+        }
+
+        private void txtPwdSignUp_IconRightClick(object sender, EventArgs e)
+        {
+            txtPwdSignUp.UseSystemPasswordChar = !txtPwdSignUp.UseSystemPasswordChar;
+        }
     }
 }

@@ -181,7 +181,7 @@ namespace Server
 
                             Console.WriteLine(Convert.ToBase64String(finalDataBytes));
                             
-                            message = $"{DateTime.Now} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
+                            message = $"{DateTime.Now.ToString("T")} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
 
                             Console.WriteLine(message);
 

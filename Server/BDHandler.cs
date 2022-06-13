@@ -74,6 +74,7 @@ namespace Server
                     reader.Close();
                     cmd = new MySqlCommand($"INSERT INTO users (username, password) VALUES( '{username}', '{password}');", myConnection);
                     cmd.ExecuteNonQuery();
+
                     return "true";
                 }
             }

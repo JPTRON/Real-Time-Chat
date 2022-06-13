@@ -85,7 +85,7 @@
             this.lblSignIn.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.lblSignIn.Location = new System.Drawing.Point(129, 349);
             this.lblSignIn.Name = "lblSignIn";
-            this.lblSignIn.Size = new System.Drawing.Size(43, 15);
+            this.lblSignIn.Size = new System.Drawing.Size(67, 25);
             this.lblSignIn.TabIndex = 14;
             this.lblSignIn.Text = "Sign In";
             this.lblSignIn.Click += new System.EventHandler(this.lblSignIn_Click);
@@ -116,7 +116,7 @@
             this.gunaLabel6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.gunaLabel6.Location = new System.Drawing.Point(30, 161);
             this.gunaLabel6.Name = "gunaLabel6";
-            this.gunaLabel6.Size = new System.Drawing.Size(70, 20);
+            this.gunaLabel6.Size = new System.Drawing.Size(103, 30);
             this.gunaLabel6.TabIndex = 7;
             this.gunaLabel6.Text = "Password";
             // 
@@ -140,6 +140,7 @@
             this.txtPwdSignUp.HoverState.Parent = this.txtPwdSignUp;
             this.txtPwdSignUp.IconRight = global::Projeto.Properties.Resources.eye_purple;
             this.txtPwdSignUp.Location = new System.Drawing.Point(34, 186);
+            this.txtPwdSignUp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtPwdSignUp.Name = "txtPwdSignUp";
             this.txtPwdSignUp.PasswordChar = '\0';
             this.txtPwdSignUp.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(3)))), ((int)(((byte)(143)))), ((int)(((byte)(255)))));
@@ -149,6 +150,7 @@
             this.txtPwdSignUp.Size = new System.Drawing.Size(237, 33);
             this.txtPwdSignUp.TabIndex = 8;
             this.txtPwdSignUp.UseSystemPasswordChar = true;
+            this.txtPwdSignUp.IconRightClick += new System.EventHandler(this.txtPwdSignUp_IconRightClick);
             // 
             // gunaLabel5
             // 
@@ -158,7 +160,7 @@
             this.gunaLabel5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.gunaLabel5.Location = new System.Drawing.Point(32, 98);
             this.gunaLabel5.Name = "gunaLabel5";
-            this.gunaLabel5.Size = new System.Drawing.Size(75, 20);
+            this.gunaLabel5.Size = new System.Drawing.Size(111, 30);
             this.gunaLabel5.TabIndex = 5;
             this.gunaLabel5.Text = "Username";
             // 
@@ -181,6 +183,7 @@
             this.txtUnameSignUp.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.txtUnameSignUp.HoverState.Parent = this.txtUnameSignUp;
             this.txtUnameSignUp.Location = new System.Drawing.Point(36, 123);
+            this.txtUnameSignUp.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.txtUnameSignUp.Name = "txtUnameSignUp";
             this.txtUnameSignUp.PasswordChar = '\0';
             this.txtUnameSignUp.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(3)))), ((int)(((byte)(143)))), ((int)(((byte)(255)))));
@@ -198,7 +201,7 @@
             this.gunaLabel4.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.gunaLabel4.Location = new System.Drawing.Point(108, 57);
             this.gunaLabel4.Name = "gunaLabel4";
-            this.gunaLabel4.Size = new System.Drawing.Size(89, 30);
+            this.gunaLabel4.Size = new System.Drawing.Size(132, 45);
             this.gunaLabel4.TabIndex = 5;
             this.gunaLabel4.Text = "Sign Up";
             // 
@@ -213,7 +216,7 @@
             this.signInPanel.Controls.Add(this.gunaLabel7);
             this.signInPanel.Controls.Add(this.usernameSigninTxt);
             this.signInPanel.Controls.Add(this.gunaLabel8);
-            this.signInPanel.Location = new System.Drawing.Point(36, 35);
+            this.signInPanel.Location = new System.Drawing.Point(38, 35);
             this.signInPanel.Name = "signInPanel";
             this.signInPanel.ShadowDecoration.Parent = this.signInPanel;
             this.signInPanel.Size = new System.Drawing.Size(301, 408);
@@ -226,7 +229,7 @@
             this.signupLbl.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.signupLbl.Location = new System.Drawing.Point(126, 349);
             this.signupLbl.Name = "signupLbl";
-            this.signupLbl.Size = new System.Drawing.Size(48, 15);
+            this.signupLbl.Size = new System.Drawing.Size(75, 25);
             this.signupLbl.TabIndex = 14;
             this.signupLbl.Text = "Sign Up";
             this.signupLbl.Click += new System.EventHandler(this.lblSignUp_Click);
@@ -257,7 +260,7 @@
             this.gunaLabel3.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.gunaLabel3.Location = new System.Drawing.Point(30, 161);
             this.gunaLabel3.Name = "gunaLabel3";
-            this.gunaLabel3.Size = new System.Drawing.Size(70, 20);
+            this.gunaLabel3.Size = new System.Drawing.Size(103, 30);
             this.gunaLabel3.TabIndex = 7;
             this.gunaLabel3.Text = "Password";
             // 
@@ -281,6 +284,7 @@
             this.passwordSigninTtx.HoverState.Parent = this.passwordSigninTtx;
             this.passwordSigninTtx.IconRight = global::Projeto.Properties.Resources.eye_purple;
             this.passwordSigninTtx.Location = new System.Drawing.Point(34, 186);
+            this.passwordSigninTtx.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.passwordSigninTtx.Name = "passwordSigninTtx";
             this.passwordSigninTtx.PasswordChar = '\0';
             this.passwordSigninTtx.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(3)))), ((int)(((byte)(143)))), ((int)(((byte)(255)))));
@@ -290,6 +294,7 @@
             this.passwordSigninTtx.Size = new System.Drawing.Size(237, 33);
             this.passwordSigninTtx.TabIndex = 8;
             this.passwordSigninTtx.UseSystemPasswordChar = true;
+            this.passwordSigninTtx.IconRightClick += new System.EventHandler(this.passwordSigninTtx_IconRightClick);
             // 
             // gunaLabel7
             // 
@@ -299,7 +304,7 @@
             this.gunaLabel7.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
             this.gunaLabel7.Location = new System.Drawing.Point(32, 98);
             this.gunaLabel7.Name = "gunaLabel7";
-            this.gunaLabel7.Size = new System.Drawing.Size(75, 20);
+            this.gunaLabel7.Size = new System.Drawing.Size(111, 30);
             this.gunaLabel7.TabIndex = 5;
             this.gunaLabel7.Text = "Username";
             // 
@@ -322,6 +327,7 @@
             this.usernameSigninTxt.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.usernameSigninTxt.HoverState.Parent = this.usernameSigninTxt;
             this.usernameSigninTxt.Location = new System.Drawing.Point(36, 123);
+            this.usernameSigninTxt.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.usernameSigninTxt.Name = "usernameSigninTxt";
             this.usernameSigninTxt.PasswordChar = '\0';
             this.usernameSigninTxt.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(3)))), ((int)(((byte)(143)))), ((int)(((byte)(255)))));
@@ -339,7 +345,7 @@
             this.gunaLabel8.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.gunaLabel8.Location = new System.Drawing.Point(108, 57);
             this.gunaLabel8.Name = "gunaLabel8";
-            this.gunaLabel8.Size = new System.Drawing.Size(79, 30);
+            this.gunaLabel8.Size = new System.Drawing.Size(118, 45);
             this.gunaLabel8.TabIndex = 5;
             this.gunaLabel8.Text = "Sign In";
             // 
@@ -382,7 +388,7 @@
             // 
             // LoginForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 23F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(61)))), ((int)(((byte)(47)))), ((int)(((byte)(75)))));
             this.ClientSize = new System.Drawing.Size(372, 478);
