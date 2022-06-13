@@ -36,6 +36,8 @@ namespace Projeto
         private string aeskey;
         private string aesiv;
 
+        private bool sendingFile = false;
+
         // Faz com que seja possível esconder o painel do perfil clicando fora do mesmo (https://stackoverflow.com/questions/37093409/c-sharp-windowsforms-hide-control-after-clicking-outside-of-it)
         const int WM_PARENTNOTIFY = 0x210;
         const int WM_LBUTTONDOWN = 0x201;
@@ -95,10 +97,14 @@ namespace Projeto
 
         private void sendFileBtn_Click(object sender, EventArgs e)
         {
+            if(sendingFile == true) { return; }
+
             OpenFileDialog ofd = new OpenFileDialog();
             
             if(ofd.ShowDialog() == DialogResult.OK)
             {
+                sendingFile = true;
+
                 byte[] packet;
 
                 string filePath = ofd.FileName;
@@ -153,6 +159,7 @@ namespace Projeto
                 }
                 else
                 {
+                    sendingFile = false;
                     chat.Items.Add(fileMessage);
                 }
             }
@@ -183,9 +190,12 @@ namespace Projeto
         private void ReceiveMessagesThread()
         {
             byte[] finalDataBytes = new byte[] { };
+            byte[] finalFileBytes = new byte[] { };
             int dataLength = 0;
+            int fileLength = 0;
+
             byte[] DecryptedMsg;
-            byte[] ack = protocolSI.Make(ProtocolSICmdType.ACK);
+            byte[] ack;
 
             while (tcpClient.Connected)
             {
@@ -201,7 +211,7 @@ namespace Projeto
 
                             finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                            //if (finalDataBytes.Length != dataLength) { break; }
+                            if (finalDataBytes.Length != dataLength) { break; }
 
                             DecryptedMsg = AesDecrypt(finalDataBytes);
 
@@ -216,13 +226,13 @@ namespace Projeto
                         case ProtocolSICmdType.USER_OPTION_2:
                             dataBytes = protocolSI.GetData();
 
-                            finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
+                            finalFileBytes = finalFileBytes.Concat(dataBytes).ToArray();
 
-                            //if (finalDataBytes.Length != dataLength) { break; }
+                            if (finalDataBytes.Length != fileLength) { break; }
                             
-                            HandleFileMessage(finalDataBytes);
-                            finalDataBytes = new byte[] { };
-                            dataLength = 0;
+                            HandleFileMessage(finalFileBytes);
+                            finalFileBytes = new byte[] { };
+                            fileLength = 0;
                             break;
                        
                         case ProtocolSICmdType.USER_OPTION_3:
@@ -235,13 +245,12 @@ namespace Projeto
                             break;
 
                         case ProtocolSICmdType.SECRET_KEY:
-                            dataBytes = protocolSI.GetData();
+                             dataBytes = protocolSI.GetData();
                              byte[] key = RSA.Decrypt(dataBytes, false);
                              aeskey = ByteConverter.GetString(key);
 
-                            networkstream.Write(ack, 0, ack.Length);
-
-
+                             ack = protocolSI.Make(ProtocolSICmdType.ACK);
+                             networkstream.Write(ack, 0, ack.Length);
                              break;
 
                         case ProtocolSICmdType.IV:
@@ -249,10 +258,9 @@ namespace Projeto
                             byte[] iv = RSA.Decrypt(dataBytes, false);
                             aesiv = ByteConverter.GetString(iv);
 
+                            ack = protocolSI.Make(ProtocolSICmdType.ACK);
                             networkstream.Write(ack, 0, ack.Length);
                             break;
-
-
                         
                     }
                 }
@@ -323,7 +331,13 @@ namespace Projeto
             byte[] mensagem = PackMessage(data);
             byte[] packet;
 
-            packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, mensagem.Length);
+            Info info = new Info();
+            info.tamanho = mensagem.Length;
+            info.tipo = type.ToString();
+
+            string infos = System.Text.Json.JsonSerializer.Serialize(info);
+
+            packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_3, infos);
             networkstream.Write(packet, 0, packet.Length);
 
             do
@@ -418,9 +432,11 @@ namespace Projeto
             string msg = textBoxMsg.Text;
 
             if (msg.Trim() == "") { return; }
-
+            if (msg.Length > 100) { MessageBox.Show($"O tamanho da mensagem excede o máximo de 100 caractéres!{Environment.NewLine}Tamanho da mensagem: {msg.Length} caractéres.", "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error); return; }
             //converter a msg num pacote
             textBoxMsg.Clear();
+
+            SetText($"{DateTime.Now.ToString("HH:mm")} | {usernameLbl.Text}: {msg}");
 
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
@@ -502,5 +518,11 @@ namespace Projeto
     {
         public byte[] message { get; set; }
         public byte[] signatureHash { get; set; }
+    }
+
+    class Info
+    {
+        public int tamanho { get; set; }
+        public string tipo { get; set; }
     }
 }
