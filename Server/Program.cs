@@ -137,8 +137,9 @@ namespace Server
             ProtocolSI protocolSI = new ProtocolSI();
             Logger logger = new Logger();
             byte[] finalDataBytes = new byte[] { };
+            byte[] finalFileBytes = new byte[] { };
             int dataLength = 0;
-
+            int fileLength = 0;
 
             while (protocolSI.GetCmdType() != ProtocolSICmdType.EOT)
             {
@@ -154,7 +155,7 @@ namespace Server
                 {
                     case ProtocolSICmdType.EOT:
 
-                        message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' disconnected";
+                        message = $"{DateTime.Now.ToString("HH:mm")} | [SERVER] - '{this.clientID}' disconnected";
 
                         Console.WriteLine(message);
                         logger.WriteLog(message);
@@ -171,7 +172,7 @@ namespace Server
                     case ProtocolSICmdType.DATA:
 
                         dataBytes = protocolSI.GetData();
-                        
+                        //Console.WriteLine($"{finalDataBytes.Length} - {dataLength} : {finalDataBytes.Length != dataLength}");
                         if (dataBytes.Length != dataLength) { break; }
 
                         ArrayM mensagem = System.Text.Json.JsonSerializer.Deserialize<ArrayM>(dataBytes);
@@ -180,19 +181,16 @@ namespace Server
 
                         if (VerifyData(finalDataBytes, mensagem.signatureHash))
                         {
-
-                            Console.WriteLine(Convert.ToBase64String(finalDataBytes));
-                            
-                            message = $"{DateTime.Now.ToString("T")} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
                             logger.WriteLog(message);
+                            message = $"{DateTime.Now.ToString("HH:mm")} | {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
 
                             Console.WriteLine(message);
 
                             byte[] NewEncryptedMsg = AesEncryption(message);
 
-                            Console.WriteLine(Convert.ToBase64String(NewEncryptedMsg));
-
+                            Vars.clients.Remove(this);
                             CreateSendDataThreads(ProtocolSICmdType.DATA, NewEncryptedMsg);
+                            Vars.clients.Add(this);
 
                             finalDataBytes = new byte[] { };
                             dataLength = 0;
@@ -206,22 +204,20 @@ namespace Server
                     case ProtocolSICmdType.USER_OPTION_2:
                         
                         dataBytes = protocolSI.GetData();
-                        
-                        finalDataBytes = finalDataBytes.Concat(dataBytes).ToArray();
 
-                        if (finalDataBytes.Length != dataLength) { break; }
+                        finalFileBytes = finalFileBytes.Concat(dataBytes).ToArray();
+                        //Console.WriteLine($"{finalFileBytes.Length} - {fileLength} : {finalFileBytes.Length != dataLength}");
+                        if (finalFileBytes.Length != fileLength) { break; }
 
-                        ArrayM fileMsg = System.Text.Json.JsonSerializer.Deserialize<ArrayM>(finalDataBytes);
+                        ArrayM fileMsg = System.Text.Json.JsonSerializer.Deserialize<ArrayM>(finalFileBytes);
 
-                        finalDataBytes = AesDecrypt(fileMsg.message);
+                        finalFileBytes = AesDecrypt(fileMsg.message);
 
-                        bool teste = VerifyData(finalDataBytes, fileMsg.signatureHash);
-
-                        if (VerifyData(finalDataBytes, fileMsg.signatureHash))
+                        if (VerifyData(finalFileBytes, fileMsg.signatureHash))
                         {
                             List<byte[]> file = new List<byte[]>();
 
-                            message = $"{DateTime.Now} - [FILE] Client {clientID}: {fileName}";
+                            message = $"{DateTime.Now.ToString("HH:mm")} | [FILE] - {clientID}: {fileName}";
                             Console.WriteLine(message);
                             logger.WriteLog(message);
 
@@ -229,7 +225,7 @@ namespace Server
                             MemoryStream ms = new MemoryStream();
 
                             file.Add(Encoding.ASCII.GetBytes(fileName));
-                            file.Add(finalDataBytes);
+                            file.Add(finalFileBytes);
                             file.Add(Encoding.ASCII.GetBytes(message));
                             formatter.Serialize(ms, file);
                             ms.Position = 0;
@@ -239,13 +235,23 @@ namespace Server
 
                             ms.Flush();
                             ms.Close();
-                            finalDataBytes = new byte[] { };
-                            dataLength = 0;
+                            finalFileBytes = new byte[] { };
+                            fileLength = 0;
                         }
                         break;
 
                     case ProtocolSICmdType.USER_OPTION_3:
-                        dataLength = Int32.Parse(protocolSI.GetStringFromData());
+                        Info info = System.Text.Json.JsonSerializer.Deserialize<Info>(protocolSI.GetData());
+                        
+                        if(info.tipo == "USER_OPTION_2")
+                        {
+                            fileLength = info.tamanho;
+                        }
+                        else if(info.tipo == "DATA")
+                        {
+                            dataLength = info.tamanho;
+                        }
+
                         break;
 
                     case ProtocolSICmdType.PUBLIC_KEY:
@@ -253,27 +259,27 @@ namespace Server
                         this.publickey = publickey;
 
                         RSA.FromXmlString(this.publickey);
-
                         
                         byte[] keybytes = RSA.Encrypt(ByteConverter.GetBytes(key), false);
                         byte[] ivbytes = RSA.Encrypt(ByteConverter.GetBytes(iv), false);
 
-
-                        SendDataToClients(this, ProtocolSICmdType.SECRET_KEY, keybytes);
-                        
-                        while(protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
-                        {
-                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
-                        }
-
-                        SendDataToClients(this, ProtocolSICmdType.IV, ivbytes);
+                        byte[] packet = protocolSI.Make(ProtocolSICmdType.SECRET_KEY, keybytes);
+                        networkStream.Write(packet, 0, packet.Length);
 
                         while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
                         {
                             networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
                         }
 
-                        message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' connected";
+                        packet = protocolSI.Make(ProtocolSICmdType.IV, ivbytes);
+                        networkStream.Write(packet, 0, packet.Length);
+
+                        while (protocolSI.GetCmdType() != ProtocolSICmdType.ACK)
+                        {
+                            networkStream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                        }
+
+                        message = $"{DateTime.Now.ToString("HH:mm")} | [SERVER] - '{this.clientID}' connected";
                         Console.WriteLine(message);
 
                         byte[] Alert = AesEncryption(message);
@@ -345,10 +351,6 @@ namespace Server
 
         public void CreateSendDataThreads(ProtocolSICmdType type, byte[] data)
         {
-            
-            byte[] tyaws = (data);
-            string ff = Convert.ToBase64String(tyaws);
-
             foreach (ClientHandler clientHandler in Vars.clients)
             {
                 Thread trd = new Thread(() => SendDataToClients(clientHandler, type, data));
@@ -400,5 +402,11 @@ namespace Server
     {
         public string username { get; set; }
         public string passwordHash { get; set; }
+    }
+
+    class Info
+    {
+        public int tamanho { get; set; }
+        public string tipo { get; set; }
     }
 }

@@ -29,7 +29,6 @@ namespace Projeto
         ProtocolSI protocolSI = new ProtocolSI();
         TcpClient tcpClient;
         Thread trd = null;
-        string username;
 
         public LoginForm()
         {
@@ -86,7 +85,7 @@ namespace Projeto
         {
             try
             {
-                username = usernameSigninTxt.Text;
+                string username = usernameSigninTxt.Text;
                 string password = passwordSigninTtx.Text;
 
                 //Verifica se os campos das textbox estão preenchidos
@@ -149,7 +148,7 @@ namespace Projeto
         {
             try
             {
-                username = txtUnameSignUp.Text;
+                string username = txtUnameSignUp.Text;
                 string password = txtPwdSignUp.Text;
 
                 //Verifica se os campos das textbox estão preenchidos
