@@ -65,13 +65,15 @@ namespace Server
                 MySqlDataReader reader = cmd.ExecuteReader();
 
                 //Verifica se o SELECT retorna algum dado
-                if(reader.Read())
+                if (reader.Read())
                 {
                     throw new Exception("Username já existente!");
                 }
                 else
                 {
+                    reader.Close();
                     cmd = new MySqlCommand($"INSERT INTO users (username, password) VALUES( '{username}', '{password}');", myConnection);
+                    cmd.ExecuteNonQuery();
                     return "true";
                 }
             }
