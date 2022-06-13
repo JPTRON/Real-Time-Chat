@@ -31,6 +31,7 @@ namespace Projeto
         TcpClient tcpClient;
         RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
         UnicodeEncoding ByteConverter = new UnicodeEncoding();
+        Thread trd = null;
 
         private string aeskey;
         private string aesiv;
@@ -68,23 +69,28 @@ namespace Projeto
             packet = protocolSI.Make(ProtocolSICmdType.PUBLIC_KEY, Encoding.ASCII.GetBytes(publickey));
             networkstream.Write(packet, 0, packet.Length);
 
-            Thread trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
+            trd = new Thread(new ThreadStart(this.ReceiveMessagesThread));
             trd.IsBackground = true;
             trd.Start();           
 
             usernameLbl.Text = username;
+            panelUsrname.Text = username;
         }
 
         //função para fechar o cliente e terminar sessão
         private void CloseClient()
         {
-            byte[] eot = protocolSI.Make(ProtocolSICmdType.EOT);
-            networkstream.Write(eot, 0, eot.Length);
+            try
+            {
+                byte[] eot = protocolSI.Make(ProtocolSICmdType.EOT);
+                networkstream.Write(eot, 0, eot.Length);
 
-            networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
+                networkstream.Read(protocolSI.Buffer, 0, protocolSI.Buffer.Length);
 
-            networkstream.Close();
-            tcpClient.Close();
+                networkstream.Close();
+                tcpClient.Close();
+            }
+            catch { }
         }
 
         private void sendFileBtn_Click(object sender, EventArgs e)
@@ -103,7 +109,7 @@ namespace Projeto
                 packet = protocolSI.Make(ProtocolSICmdType.USER_OPTION_1, fileName);
                 networkstream.Write(packet, 0, packet.Length);
 
-                Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.USER_OPTION_2 ,fileBytes));
+                trd = new Thread(() => SendDataThread(ProtocolSICmdType.USER_OPTION_2 ,fileBytes));
                 trd.IsBackground = true;
                 trd.Start();                                       
             }
@@ -418,7 +424,7 @@ namespace Projeto
 
             byte[] bytes = Encoding.UTF8.GetBytes(msg);
 
-            Thread trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, bytes));
+            trd = new Thread(() => SendDataThread(ProtocolSICmdType.DATA, bytes));
             trd.IsBackground = true;
             trd.Start();
         }
@@ -457,6 +463,19 @@ namespace Projeto
         private void avatarPB_Click(object sender, EventArgs e)
         {
             profilePanel.Visible = true;
+        }
+
+        private void btnLogOut_Click(object sender, EventArgs e)
+        {
+            DialogResult result = MessageBox.Show("Pretende dar LogOut do Chat?", "Confirmação", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+            
+            if (result == DialogResult.Yes)
+            {
+                trd.Abort();
+                LoginForm form = new LoginForm();
+                form.Show();
+                Close();
+            }
         }
     }
 

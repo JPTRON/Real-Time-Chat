@@ -46,7 +46,6 @@
             this.profilePanel = new Guna.UI2.WinForms.Guna2Panel();
             this.btnLogOut = new Guna.UI2.WinForms.Guna2Button();
             this.panelUsrname = new System.Windows.Forms.Label();
-            this.txtDesc = new Guna.UI2.WinForms.Guna2TextBox();
             this.panelProfilePic = new Guna.UI2.WinForms.Guna2CirclePictureBox();
             this.dockPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.avatarPB)).BeginInit();
@@ -60,10 +59,9 @@
             this.onlineUsersLbl.BackColor = System.Drawing.Color.Transparent;
             this.onlineUsersLbl.Font = new System.Drawing.Font("Arial Rounded MT Bold", 14F);
             this.onlineUsersLbl.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.onlineUsersLbl.Location = new System.Drawing.Point(1040, 123);
-            this.onlineUsersLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.onlineUsersLbl.Location = new System.Drawing.Point(693, 80);
             this.onlineUsersLbl.Name = "onlineUsersLbl";
-            this.onlineUsersLbl.Size = new System.Drawing.Size(31, 32);
+            this.onlineUsersLbl.Size = new System.Drawing.Size(21, 22);
             this.onlineUsersLbl.TabIndex = 9;
             this.onlineUsersLbl.Text = "0";
             // 
@@ -75,11 +73,10 @@
             this.chat.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.chat.FormattingEnabled = true;
             this.chat.HorizontalScrollbar = true;
-            this.chat.ItemHeight = 28;
-            this.chat.Location = new System.Drawing.Point(123, 182);
-            this.chat.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.chat.ItemHeight = 18;
+            this.chat.Location = new System.Drawing.Point(82, 118);
             this.chat.Name = "chat";
-            this.chat.Size = new System.Drawing.Size(1002, 616);
+            this.chat.Size = new System.Drawing.Size(668, 396);
             this.chat.TabIndex = 11;
             this.chat.SelectedIndexChanged += new System.EventHandler(this.chat_SelectedIndexChanged);
             // 
@@ -89,9 +86,8 @@
             this.dockPanel.Controls.Add(this.btnClose);
             this.dockPanel.Controls.Add(this.btnMinimize);
             this.dockPanel.Location = new System.Drawing.Point(0, 0);
-            this.dockPanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.dockPanel.Name = "dockPanel";
-            this.dockPanel.Size = new System.Drawing.Size(1248, 49);
+            this.dockPanel.Size = new System.Drawing.Size(832, 32);
             this.dockPanel.TabIndex = 14;
             this.dockPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dockPanel_MouseDown);
             this.dockPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dockPanel_MouseMove);
@@ -102,10 +98,9 @@
             this.btnClose.FlatAppearance.BorderSize = 0;
             this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnClose.Image = ((System.Drawing.Image)(resources.GetObject("btnClose.Image")));
-            this.btnClose.Location = new System.Drawing.Point(1202, 9);
-            this.btnClose.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnClose.Location = new System.Drawing.Point(801, 6);
             this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(30, 31);
+            this.btnClose.Size = new System.Drawing.Size(20, 20);
             this.btnClose.TabIndex = 18;
             this.btnClose.UseVisualStyleBackColor = true;
             this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
@@ -115,10 +110,9 @@
             this.btnMinimize.FlatAppearance.BorderSize = 0;
             this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnMinimize.Image = ((System.Drawing.Image)(resources.GetObject("btnMinimize.Image")));
-            this.btnMinimize.Location = new System.Drawing.Point(1162, 9);
-            this.btnMinimize.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnMinimize.Location = new System.Drawing.Point(775, 6);
             this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(30, 31);
+            this.btnMinimize.Size = new System.Drawing.Size(20, 20);
             this.btnMinimize.TabIndex = 17;
             this.btnMinimize.UseVisualStyleBackColor = true;
             this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
@@ -141,14 +135,14 @@
             this.textBoxMsg.ForeColor = System.Drawing.Color.WhiteSmoke;
             this.textBoxMsg.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
             this.textBoxMsg.HoverState.Parent = this.textBoxMsg;
-            this.textBoxMsg.Location = new System.Drawing.Point(184, 862);
-            this.textBoxMsg.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
+            this.textBoxMsg.Location = new System.Drawing.Point(123, 560);
+            this.textBoxMsg.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.textBoxMsg.Name = "textBoxMsg";
             this.textBoxMsg.PasswordChar = '\0';
             this.textBoxMsg.PlaceholderText = "Mensagem...";
             this.textBoxMsg.SelectedText = "";
             this.textBoxMsg.ShadowDecoration.Parent = this.textBoxMsg;
-            this.textBoxMsg.Size = new System.Drawing.Size(876, 55);
+            this.textBoxMsg.Size = new System.Drawing.Size(584, 36);
             this.textBoxMsg.TabIndex = 15;
             this.textBoxMsg.KeyDown += new System.Windows.Forms.KeyEventHandler(this.textBoxMsg_KeyDown);
             // 
@@ -158,10 +152,9 @@
             this.usernameLbl.BackColor = System.Drawing.Color.Transparent;
             this.usernameLbl.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11F);
             this.usernameLbl.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.usernameLbl.Location = new System.Drawing.Point(207, 131);
-            this.usernameLbl.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.usernameLbl.Location = new System.Drawing.Point(138, 74);
             this.usernameLbl.Name = "usernameLbl";
-            this.usernameLbl.Size = new System.Drawing.Size(122, 26);
+            this.usernameLbl.Size = new System.Drawing.Size(83, 17);
             this.usernameLbl.TabIndex = 18;
             this.usernameLbl.Text = "Username";
             // 
@@ -179,12 +172,11 @@
             // 
             this.avatarPB.BackColor = System.Drawing.Color.Transparent;
             this.avatarPB.Image = global::Projeto.Properties.Resources._default;
-            this.avatarPB.Location = new System.Drawing.Point(123, 83);
-            this.avatarPB.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.avatarPB.Location = new System.Drawing.Point(82, 54);
             this.avatarPB.Name = "avatarPB";
             this.avatarPB.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             this.avatarPB.ShadowDecoration.Parent = this.avatarPB;
-            this.avatarPB.Size = new System.Drawing.Size(75, 77);
+            this.avatarPB.Size = new System.Drawing.Size(50, 50);
             this.avatarPB.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.avatarPB.TabIndex = 17;
             this.avatarPB.TabStop = false;
@@ -201,12 +193,11 @@
             this.btnSend.Image = global::Projeto.Properties.Resources.send_1_smol;
             this.btnSend.ImageOffset = new System.Drawing.Point(1, -1);
             this.btnSend.ImageSize = new System.Drawing.Size(25, 25);
-            this.btnSend.Location = new System.Drawing.Point(1071, 862);
-            this.btnSend.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnSend.Location = new System.Drawing.Point(714, 560);
             this.btnSend.Name = "btnSend";
             this.btnSend.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             this.btnSend.ShadowDecoration.Parent = this.btnSend;
-            this.btnSend.Size = new System.Drawing.Size(54, 55);
+            this.btnSend.Size = new System.Drawing.Size(36, 36);
             this.btnSend.TabIndex = 16;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
@@ -215,10 +206,9 @@
             this.buttonMenu.FlatAppearance.BorderSize = 0;
             this.buttonMenu.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.buttonMenu.Image = global::Projeto.Properties.Resources.user_smol;
-            this.buttonMenu.Location = new System.Drawing.Point(1080, 114);
-            this.buttonMenu.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.buttonMenu.Location = new System.Drawing.Point(720, 74);
             this.buttonMenu.Name = "buttonMenu";
-            this.buttonMenu.Size = new System.Drawing.Size(45, 46);
+            this.buttonMenu.Size = new System.Drawing.Size(30, 30);
             this.buttonMenu.TabIndex = 12;
             this.buttonMenu.UseVisualStyleBackColor = true;
             // 
@@ -227,10 +217,9 @@
             this.sendFileBtn.FlatAppearance.BorderSize = 0;
             this.sendFileBtn.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.sendFileBtn.Image = global::Projeto.Properties.Resources.file_even_smol;
-            this.sendFileBtn.Location = new System.Drawing.Point(123, 860);
-            this.sendFileBtn.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.sendFileBtn.Location = new System.Drawing.Point(82, 559);
             this.sendFileBtn.Name = "sendFileBtn";
-            this.sendFileBtn.Size = new System.Drawing.Size(54, 55);
+            this.sendFileBtn.Size = new System.Drawing.Size(36, 36);
             this.sendFileBtn.TabIndex = 10;
             this.sendFileBtn.UseVisualStyleBackColor = true;
             this.sendFileBtn.Click += new System.EventHandler(this.sendFileBtn_Click);
@@ -241,13 +230,11 @@
             this.profilePanel.BorderThickness = 1;
             this.profilePanel.Controls.Add(this.btnLogOut);
             this.profilePanel.Controls.Add(this.panelUsrname);
-            this.profilePanel.Controls.Add(this.txtDesc);
             this.profilePanel.Controls.Add(this.panelProfilePic);
-            this.profilePanel.Location = new System.Drawing.Point(18, 162);
-            this.profilePanel.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.profilePanel.Location = new System.Drawing.Point(12, 105);
             this.profilePanel.Name = "profilePanel";
             this.profilePanel.ShadowDecoration.Parent = this.profilePanel;
-            this.profilePanel.Size = new System.Drawing.Size(322, 460);
+            this.profilePanel.Size = new System.Drawing.Size(215, 299);
             this.profilePanel.TabIndex = 19;
             this.profilePanel.Visible = false;
             // 
@@ -260,74 +247,46 @@
             this.btnLogOut.Font = new System.Drawing.Font("Segoe UI", 9F);
             this.btnLogOut.ForeColor = System.Drawing.Color.White;
             this.btnLogOut.HoverState.Parent = this.btnLogOut;
-            this.btnLogOut.Location = new System.Drawing.Point(105, 400);
-            this.btnLogOut.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.btnLogOut.Location = new System.Drawing.Point(70, 199);
             this.btnLogOut.Name = "btnLogOut";
             this.btnLogOut.ShadowDecoration.Parent = this.btnLogOut;
-            this.btnLogOut.Size = new System.Drawing.Size(94, 37);
+            this.btnLogOut.Size = new System.Drawing.Size(63, 24);
             this.btnLogOut.TabIndex = 21;
             this.btnLogOut.Text = "Log Out";
+            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
             // 
             // panelUsrname
             // 
             this.panelUsrname.AutoSize = true;
             this.panelUsrname.BackColor = System.Drawing.Color.Transparent;
-            this.panelUsrname.Font = new System.Drawing.Font("Arial Rounded MT Bold", 7F);
+            this.panelUsrname.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11F);
             this.panelUsrname.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.panelUsrname.Location = new System.Drawing.Point(54, 193);
-            this.panelUsrname.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
+            this.panelUsrname.Location = new System.Drawing.Point(63, 126);
             this.panelUsrname.Name = "panelUsrname";
-            this.panelUsrname.Size = new System.Drawing.Size(205, 16);
+            this.panelUsrname.Size = new System.Drawing.Size(83, 17);
             this.panelUsrname.TabIndex = 20;
-            this.panelUsrname.Text = "Feature Não Implementada ;-;";
-            // 
-            // txtDesc
-            // 
-            this.txtDesc.BorderRadius = 8;
-            this.txtDesc.Cursor = System.Windows.Forms.Cursors.IBeam;
-            this.txtDesc.DefaultText = "";
-            this.txtDesc.DisabledState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(208)))), ((int)(((byte)(208)))), ((int)(((byte)(208)))));
-            this.txtDesc.DisabledState.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(226)))), ((int)(((byte)(226)))), ((int)(((byte)(226)))));
-            this.txtDesc.DisabledState.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtDesc.DisabledState.Parent = this.txtDesc;
-            this.txtDesc.DisabledState.PlaceholderForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(138)))), ((int)(((byte)(138)))), ((int)(((byte)(138)))));
-            this.txtDesc.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
-            this.txtDesc.FocusedState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtDesc.FocusedState.Parent = this.txtDesc;
-            this.txtDesc.ForeColor = System.Drawing.Color.Black;
-            this.txtDesc.HoverState.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(94)))), ((int)(((byte)(148)))), ((int)(((byte)(255)))));
-            this.txtDesc.HoverState.Parent = this.txtDesc;
-            this.txtDesc.Location = new System.Drawing.Point(57, 254);
-            this.txtDesc.Margin = new System.Windows.Forms.Padding(6, 8, 6, 8);
-            this.txtDesc.Name = "txtDesc";
-            this.txtDesc.PasswordChar = '\0';
-            this.txtDesc.PlaceholderForeColor = System.Drawing.Color.Black;
-            this.txtDesc.PlaceholderText = "Descrição...";
-            this.txtDesc.SelectedText = "";
-            this.txtDesc.ShadowDecoration.Parent = this.txtDesc;
-            this.txtDesc.Size = new System.Drawing.Size(200, 122);
-            this.txtDesc.TabIndex = 1;
+            this.panelUsrname.Text = "Username";
+            this.panelUsrname.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
             // panelProfilePic
             // 
             this.panelProfilePic.BackColor = System.Drawing.Color.Transparent;
             this.panelProfilePic.Image = global::Projeto.Properties.Resources._default;
-            this.panelProfilePic.Location = new System.Drawing.Point(82, 20);
-            this.panelProfilePic.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
+            this.panelProfilePic.Location = new System.Drawing.Point(55, 13);
             this.panelProfilePic.Name = "panelProfilePic";
             this.panelProfilePic.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
             this.panelProfilePic.ShadowDecoration.Parent = this.panelProfilePic;
-            this.panelProfilePic.Size = new System.Drawing.Size(150, 154);
+            this.panelProfilePic.Size = new System.Drawing.Size(100, 100);
             this.panelProfilePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.panelProfilePic.TabIndex = 0;
             this.panelProfilePic.TabStop = false;
             // 
             // ChatForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 20F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(61)))), ((int)(((byte)(47)))), ((int)(((byte)(75)))));
-            this.ClientSize = new System.Drawing.Size(1250, 966);
+            this.ClientSize = new System.Drawing.Size(833, 628);
             this.Controls.Add(this.profilePanel);
             this.Controls.Add(this.usernameLbl);
             this.Controls.Add(this.avatarPB);
@@ -339,7 +298,6 @@
             this.Controls.Add(this.sendFileBtn);
             this.Controls.Add(this.onlineUsersLbl);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Margin = new System.Windows.Forms.Padding(4, 5, 4, 5);
             this.MaximizeBox = false;
             this.Name = "ChatForm";
             this.Text = "Form1";
@@ -373,7 +331,6 @@
         private Guna.UI2.WinForms.Guna2Panel profilePanel;
         private Guna.UI2.WinForms.Guna2Button btnLogOut;
         private System.Windows.Forms.Label panelUsrname;
-        private Guna.UI2.WinForms.Guna2TextBox txtDesc;
         private Guna.UI2.WinForms.Guna2CirclePictureBox panelProfilePic;
     }
 }
