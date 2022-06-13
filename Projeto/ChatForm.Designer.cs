@@ -33,24 +33,27 @@
             this.onlineUsersLbl = new System.Windows.Forms.Label();
             this.chat = new System.Windows.Forms.ListBox();
             this.dockPanel = new System.Windows.Forms.Panel();
-            this.btnClose = new System.Windows.Forms.Button();
-            this.btnMinimize = new System.Windows.Forms.Button();
             this.textBoxMsg = new Guna.UI2.WinForms.Guna2TextBox();
             this.usernameLbl = new System.Windows.Forms.Label();
             this.RoundChat = new Guna.UI2.WinForms.Guna2Elipse(this.components);
             this.RoundForm = new Guna.UI2.WinForms.Guna2Elipse(this.components);
-            this.avatarPB = new Guna.UI2.WinForms.Guna2CirclePictureBox();
-            this.btnSend = new Guna.UI2.WinForms.Guna2CircleButton();
-            this.buttonMenu = new System.Windows.Forms.Button();
-            this.sendFileBtn = new System.Windows.Forms.Button();
             this.profilePanel = new Guna.UI2.WinForms.Guna2Panel();
             this.btnLogOut = new Guna.UI2.WinForms.Guna2Button();
             this.panelUsrname = new System.Windows.Forms.Label();
             this.panelProfilePic = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.avatarPB = new Guna.UI2.WinForms.Guna2CirclePictureBox();
+            this.btnSend = new Guna.UI2.WinForms.Guna2CircleButton();
+            this.btnClose = new System.Windows.Forms.Button();
+            this.btnMinimize = new System.Windows.Forms.Button();
+            this.buttonMenu = new System.Windows.Forms.Button();
+            this.sendFileBtn = new System.Windows.Forms.Button();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.dockPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.avatarPB)).BeginInit();
             this.profilePanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelProfilePic)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.avatarPB)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // onlineUsersLbl
@@ -83,6 +86,8 @@
             // dockPanel
             // 
             this.dockPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
+            this.dockPanel.Controls.Add(this.label1);
+            this.dockPanel.Controls.Add(this.pictureBox1);
             this.dockPanel.Controls.Add(this.btnClose);
             this.dockPanel.Controls.Add(this.btnMinimize);
             this.dockPanel.Location = new System.Drawing.Point(0, 0);
@@ -92,30 +97,6 @@
             this.dockPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.dockPanel_MouseDown);
             this.dockPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.dockPanel_MouseMove);
             this.dockPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.dockPanel_MouseUp);
-            // 
-            // btnClose
-            // 
-            this.btnClose.FlatAppearance.BorderSize = 0;
-            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnClose.Image = ((System.Drawing.Image)(resources.GetObject("btnClose.Image")));
-            this.btnClose.Location = new System.Drawing.Point(801, 6);
-            this.btnClose.Name = "btnClose";
-            this.btnClose.Size = new System.Drawing.Size(20, 20);
-            this.btnClose.TabIndex = 18;
-            this.btnClose.UseVisualStyleBackColor = true;
-            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
-            // 
-            // btnMinimize
-            // 
-            this.btnMinimize.FlatAppearance.BorderSize = 0;
-            this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnMinimize.Image = ((System.Drawing.Image)(resources.GetObject("btnMinimize.Image")));
-            this.btnMinimize.Location = new System.Drawing.Point(775, 6);
-            this.btnMinimize.Name = "btnMinimize";
-            this.btnMinimize.Size = new System.Drawing.Size(20, 20);
-            this.btnMinimize.TabIndex = 17;
-            this.btnMinimize.UseVisualStyleBackColor = true;
-            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
             // 
             // textBoxMsg
             // 
@@ -168,6 +149,63 @@
             this.RoundForm.BorderRadius = 8;
             this.RoundForm.TargetControl = this;
             // 
+            // profilePanel
+            // 
+            this.profilePanel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(61)))), ((int)(((byte)(47)))), ((int)(((byte)(75)))));
+            this.profilePanel.BorderThickness = 1;
+            this.profilePanel.Controls.Add(this.btnLogOut);
+            this.profilePanel.Controls.Add(this.panelUsrname);
+            this.profilePanel.Controls.Add(this.panelProfilePic);
+            this.profilePanel.Location = new System.Drawing.Point(26, 108);
+            this.profilePanel.Name = "profilePanel";
+            this.profilePanel.ShadowDecoration.Parent = this.profilePanel;
+            this.profilePanel.Size = new System.Drawing.Size(163, 211);
+            this.profilePanel.TabIndex = 19;
+            this.profilePanel.Visible = false;
+            // 
+            // btnLogOut
+            // 
+            this.btnLogOut.BorderRadius = 8;
+            this.btnLogOut.CheckedState.Parent = this.btnLogOut;
+            this.btnLogOut.CustomImages.Parent = this.btnLogOut;
+            this.btnLogOut.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(218)))), ((int)(((byte)(49)))), ((int)(((byte)(24)))));
+            this.btnLogOut.Font = new System.Drawing.Font("Segoe UI", 9F);
+            this.btnLogOut.ForeColor = System.Drawing.Color.White;
+            this.btnLogOut.HoverState.Parent = this.btnLogOut;
+            this.btnLogOut.Location = new System.Drawing.Point(49, 152);
+            this.btnLogOut.Name = "btnLogOut";
+            this.btnLogOut.ShadowDecoration.Parent = this.btnLogOut;
+            this.btnLogOut.Size = new System.Drawing.Size(63, 24);
+            this.btnLogOut.TabIndex = 21;
+            this.btnLogOut.Text = "Log Out";
+            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
+            // 
+            // panelUsrname
+            // 
+            this.panelUsrname.AutoSize = true;
+            this.panelUsrname.BackColor = System.Drawing.Color.Transparent;
+            this.panelUsrname.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11F);
+            this.panelUsrname.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.panelUsrname.Location = new System.Drawing.Point(39, 126);
+            this.panelUsrname.Name = "panelUsrname";
+            this.panelUsrname.Size = new System.Drawing.Size(83, 17);
+            this.panelUsrname.TabIndex = 20;
+            this.panelUsrname.Text = "Username";
+            this.panelUsrname.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // panelProfilePic
+            // 
+            this.panelProfilePic.BackColor = System.Drawing.Color.Transparent;
+            this.panelProfilePic.Image = global::Projeto.Properties.Resources._default;
+            this.panelProfilePic.Location = new System.Drawing.Point(31, 13);
+            this.panelProfilePic.Name = "panelProfilePic";
+            this.panelProfilePic.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
+            this.panelProfilePic.ShadowDecoration.Parent = this.panelProfilePic;
+            this.panelProfilePic.Size = new System.Drawing.Size(100, 100);
+            this.panelProfilePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.panelProfilePic.TabIndex = 0;
+            this.panelProfilePic.TabStop = false;
+            // 
             // avatarPB
             // 
             this.avatarPB.BackColor = System.Drawing.Color.Transparent;
@@ -201,6 +239,30 @@
             this.btnSend.TabIndex = 16;
             this.btnSend.Click += new System.EventHandler(this.btnSend_Click);
             // 
+            // btnClose
+            // 
+            this.btnClose.FlatAppearance.BorderSize = 0;
+            this.btnClose.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnClose.Image = ((System.Drawing.Image)(resources.GetObject("btnClose.Image")));
+            this.btnClose.Location = new System.Drawing.Point(801, 6);
+            this.btnClose.Name = "btnClose";
+            this.btnClose.Size = new System.Drawing.Size(20, 20);
+            this.btnClose.TabIndex = 18;
+            this.btnClose.UseVisualStyleBackColor = true;
+            this.btnClose.Click += new System.EventHandler(this.btnClose_Click);
+            // 
+            // btnMinimize
+            // 
+            this.btnMinimize.FlatAppearance.BorderSize = 0;
+            this.btnMinimize.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.btnMinimize.Image = ((System.Drawing.Image)(resources.GetObject("btnMinimize.Image")));
+            this.btnMinimize.Location = new System.Drawing.Point(775, 6);
+            this.btnMinimize.Name = "btnMinimize";
+            this.btnMinimize.Size = new System.Drawing.Size(20, 20);
+            this.btnMinimize.TabIndex = 17;
+            this.btnMinimize.UseVisualStyleBackColor = true;
+            this.btnMinimize.Click += new System.EventHandler(this.btnMinimize_Click);
+            // 
             // buttonMenu
             // 
             this.buttonMenu.FlatAppearance.BorderSize = 0;
@@ -224,62 +286,28 @@
             this.sendFileBtn.UseVisualStyleBackColor = true;
             this.sendFileBtn.Click += new System.EventHandler(this.sendFileBtn_Click);
             // 
-            // profilePanel
+            // pictureBox1
             // 
-            this.profilePanel.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
-            this.profilePanel.BorderThickness = 1;
-            this.profilePanel.Controls.Add(this.btnLogOut);
-            this.profilePanel.Controls.Add(this.panelUsrname);
-            this.profilePanel.Controls.Add(this.panelProfilePic);
-            this.profilePanel.Location = new System.Drawing.Point(12, 105);
-            this.profilePanel.Name = "profilePanel";
-            this.profilePanel.ShadowDecoration.Parent = this.profilePanel;
-            this.profilePanel.Size = new System.Drawing.Size(215, 299);
-            this.profilePanel.TabIndex = 19;
-            this.profilePanel.Visible = false;
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.BackgroundImage = global::Projeto.Properties.Resources.logo;
+            this.pictureBox1.Image = global::Projeto.Properties.Resources.logo;
+            this.pictureBox1.Location = new System.Drawing.Point(4, 2);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(28, 28);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 23;
+            this.pictureBox1.TabStop = false;
             // 
-            // btnLogOut
+            // label1
             // 
-            this.btnLogOut.BorderRadius = 8;
-            this.btnLogOut.CheckedState.Parent = this.btnLogOut;
-            this.btnLogOut.CustomImages.Parent = this.btnLogOut;
-            this.btnLogOut.FillColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
-            this.btnLogOut.Font = new System.Drawing.Font("Segoe UI", 9F);
-            this.btnLogOut.ForeColor = System.Drawing.Color.White;
-            this.btnLogOut.HoverState.Parent = this.btnLogOut;
-            this.btnLogOut.Location = new System.Drawing.Point(70, 199);
-            this.btnLogOut.Name = "btnLogOut";
-            this.btnLogOut.ShadowDecoration.Parent = this.btnLogOut;
-            this.btnLogOut.Size = new System.Drawing.Size(63, 24);
-            this.btnLogOut.TabIndex = 21;
-            this.btnLogOut.Text = "Log Out";
-            this.btnLogOut.Click += new System.EventHandler(this.btnLogOut_Click);
-            // 
-            // panelUsrname
-            // 
-            this.panelUsrname.AutoSize = true;
-            this.panelUsrname.BackColor = System.Drawing.Color.Transparent;
-            this.panelUsrname.Font = new System.Drawing.Font("Arial Rounded MT Bold", 11F);
-            this.panelUsrname.ForeColor = System.Drawing.Color.WhiteSmoke;
-            this.panelUsrname.Location = new System.Drawing.Point(63, 126);
-            this.panelUsrname.Name = "panelUsrname";
-            this.panelUsrname.Size = new System.Drawing.Size(83, 17);
-            this.panelUsrname.TabIndex = 20;
-            this.panelUsrname.Text = "Username";
-            this.panelUsrname.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            // 
-            // panelProfilePic
-            // 
-            this.panelProfilePic.BackColor = System.Drawing.Color.Transparent;
-            this.panelProfilePic.Image = global::Projeto.Properties.Resources._default;
-            this.panelProfilePic.Location = new System.Drawing.Point(55, 13);
-            this.panelProfilePic.Name = "panelProfilePic";
-            this.panelProfilePic.ShadowDecoration.Mode = Guna.UI2.WinForms.Enums.ShadowMode.Circle;
-            this.panelProfilePic.ShadowDecoration.Parent = this.panelProfilePic;
-            this.panelProfilePic.Size = new System.Drawing.Size(100, 100);
-            this.panelProfilePic.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.panelProfilePic.TabIndex = 0;
-            this.panelProfilePic.TabStop = false;
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("MADE TOMMY", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.label1.Location = new System.Drawing.Point(38, 6);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(95, 20);
+            this.label1.TabIndex = 24;
+            this.label1.Text = "TimzBeek 4";
             // 
             // ChatForm
             // 
@@ -304,10 +332,12 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.dockPanel.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)(this.avatarPB)).EndInit();
+            this.dockPanel.PerformLayout();
             this.profilePanel.ResumeLayout(false);
             this.profilePanel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.panelProfilePic)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.avatarPB)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -332,6 +362,8 @@
         private Guna.UI2.WinForms.Guna2Button btnLogOut;
         private System.Windows.Forms.Label panelUsrname;
         private Guna.UI2.WinForms.Guna2CirclePictureBox panelProfilePic;
+        private System.Windows.Forms.PictureBox pictureBox1;
+        private System.Windows.Forms.Label label1;
     }
 }
 

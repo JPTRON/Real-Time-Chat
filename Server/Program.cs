@@ -31,6 +31,7 @@ namespace Server
             string aesKey = Convert.ToBase64String(aes.Key);
             string aesIV = Convert.ToBase64String(aes.IV);
 
+            Logger logger = new Logger();
             ProtocolSI protocolSI = new ProtocolSI();
             s s = new s();
             IPEndPoint endPoint = new IPEndPoint(IPAddress.Any, PORT);
@@ -39,6 +40,7 @@ namespace Server
             tcplistener.Start();
 
             Console.WriteLine($"{DateTime.Now} - Server Ready!");
+            logger.WriteLog($"{DateTime.Now} - Server Ready!");
 
             while (true)
             {
@@ -75,10 +77,28 @@ namespace Server
 
         public void login(byte[] dataBytes, NetworkStream clientNetworkStream)
         {
+            bool existente = false;
+            string message;
+
             credenciais = System.Text.Json.JsonSerializer.Deserialize<Credenciais>(dataBytes);
 
-            string message = BD.CompareCredentials(credenciais.username, credenciais.passwordHash);
-
+            foreach(ClientHandler clientHandler in Vars.clients)
+            {
+                if(credenciais.username == clientHandler.clientID)
+                {
+                    existente = true;
+                }
+            }
+            
+            if(existente)
+            {
+                message = "O cliente com esse username já se encontra com sessão iniciada!";
+            }
+            else
+            {
+                message = BD.CompareCredentials(credenciais.username, credenciais.passwordHash);
+            }
+            
             byte[] packet = protocolSI.Make(ProtocolSICmdType.DATA, Encoding.ASCII.GetBytes(message));
             clientNetworkStream.Write(packet, 0, packet.Length);
 
@@ -105,7 +125,7 @@ namespace Server
     {
         RSACryptoServiceProvider RSA = new RSACryptoServiceProvider();
         private TcpClient client;
-        private string clientID;
+        public string clientID;
         private string fileName = "";
         private string iv;
         private string key;
@@ -167,6 +187,9 @@ namespace Server
                         CreateSendDataThreads(ProtocolSICmdType.DATA, EncryptedMsg);
                         Thread.Sleep(100);
                         CreateSendDataThreads(ProtocolSICmdType.USER_OPTION_4, Encoding.ASCII.GetBytes(Vars.clients.Count.ToString()));
+
+                        message = $"{DateTime.Now} | [SERVER] - '{this.clientID}' disconnected";
+                        logger.WriteLog(message);
                         break;
 
                     case ProtocolSICmdType.DATA:
@@ -181,7 +204,6 @@ namespace Server
 
                         if (VerifyData(finalDataBytes, mensagem.signatureHash))
                         {
-                            logger.WriteLog(message);
                             message = $"{DateTime.Now.ToString("HH:mm")} | {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
 
                             Console.WriteLine(message);
@@ -191,6 +213,9 @@ namespace Server
                             Vars.clients.Remove(this);
                             CreateSendDataThreads(ProtocolSICmdType.DATA, NewEncryptedMsg);
                             Vars.clients.Add(this);
+
+                            message = $"{DateTime.Now} | {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
+                            logger.WriteLog(message);
 
                             finalDataBytes = new byte[] { };
                             dataLength = 0;
@@ -219,7 +244,6 @@ namespace Server
 
                             message = $"{DateTime.Now.ToString("HH:mm")} | [FILE] - {clientID}: {fileName}";
                             Console.WriteLine(message);
-                            logger.WriteLog(message);
 
                             BinaryFormatter formatter = new BinaryFormatter();
                             MemoryStream ms = new MemoryStream();
@@ -232,6 +256,9 @@ namespace Server
                             //File.WriteAllBytes($"./{fileName}", finalDataBytes);
 
                             CreateSendDataThreads(ProtocolSICmdType.USER_OPTION_2, ms.ToArray());
+
+                            message = $"{DateTime.Now} | [FILE] - {clientID}: {fileName}";
+                            logger.WriteLog(message);
 
                             ms.Flush();
                             ms.Close();
@@ -285,6 +312,9 @@ namespace Server
                         byte[] Alert = AesEncryption(message);
 
                         CreateSendDataThreads(ProtocolSICmdType.DATA, Alert);
+
+                        message = $"{DateTime.Now} | [SERVER] - '{this.clientID}' connected";
+                        logger.WriteLog(message);
                         break;
                 }            
             }

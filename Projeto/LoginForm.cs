@@ -202,7 +202,7 @@ namespace Projeto
             }
             catch (Exception err)
             {
-                MessageBox.Show(err.Message, "Erro");
+                MessageBox.Show(err.Message, "Erro", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 

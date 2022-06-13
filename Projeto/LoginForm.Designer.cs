@@ -49,11 +49,14 @@
             this.usernameSigninTxt = new Guna.UI2.WinForms.Guna2TextBox();
             this.gunaLabel8 = new Guna.UI.WinForms.GunaLabel();
             this.topBar = new Guna.UI.WinForms.GunaPanel();
+            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.label1 = new System.Windows.Forms.Label();
             this.btnMinimize = new System.Windows.Forms.Button();
             this.btnClose = new System.Windows.Forms.Button();
             this.signUpPanel.SuspendLayout();
             this.signInPanel.SuspendLayout();
             this.topBar.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // RoundForm
@@ -352,6 +355,8 @@
             // topBar
             // 
             this.topBar.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(123)))), ((int)(((byte)(104)))), ((int)(((byte)(165)))));
+            this.topBar.Controls.Add(this.pictureBox1);
+            this.topBar.Controls.Add(this.label1);
             this.topBar.Controls.Add(this.btnMinimize);
             this.topBar.Controls.Add(this.btnClose);
             this.topBar.Location = new System.Drawing.Point(-2, 0);
@@ -361,6 +366,29 @@
             this.topBar.MouseDown += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseDown);
             this.topBar.MouseMove += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseMove);
             this.topBar.MouseUp += new System.Windows.Forms.MouseEventHandler(this.topBar_MouseUp);
+            // 
+            // pictureBox1
+            // 
+            this.pictureBox1.BackColor = System.Drawing.Color.Transparent;
+            this.pictureBox1.BackgroundImage = global::Projeto.Properties.Resources.logo;
+            this.pictureBox1.Image = global::Projeto.Properties.Resources.logo;
+            this.pictureBox1.Location = new System.Drawing.Point(4, 0);
+            this.pictureBox1.Name = "pictureBox1";
+            this.pictureBox1.Size = new System.Drawing.Size(28, 28);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBox1.TabIndex = 22;
+            this.pictureBox1.TabStop = false;
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("MADE TOMMY", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.ForeColor = System.Drawing.Color.WhiteSmoke;
+            this.label1.Location = new System.Drawing.Point(38, 3);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(95, 20);
+            this.label1.TabIndex = 21;
+            this.label1.Text = "TimzBeek 4";
             // 
             // btnMinimize
             // 
@@ -392,11 +420,12 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(61)))), ((int)(((byte)(47)))), ((int)(((byte)(75)))));
             this.ClientSize = new System.Drawing.Size(372, 478);
-            this.Controls.Add(this.signInPanel);
             this.Controls.Add(this.topBar);
+            this.Controls.Add(this.signInPanel);
             this.Controls.Add(this.signUpPanel);
             this.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "LoginForm";
             this.Text = "Login/Sign Up";
             this.signUpPanel.ResumeLayout(false);
@@ -404,6 +433,8 @@
             this.signInPanel.ResumeLayout(false);
             this.signInPanel.PerformLayout();
             this.topBar.ResumeLayout(false);
+            this.topBar.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -431,6 +462,8 @@
         private Guna.UI.WinForms.GunaLabel gunaLabel7;
         private Guna.UI2.WinForms.Guna2TextBox usernameSigninTxt;
         private Guna.UI.WinForms.GunaLabel gunaLabel8;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.PictureBox pictureBox1;
     }
 }
 
