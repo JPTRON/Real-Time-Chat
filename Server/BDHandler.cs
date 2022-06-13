@@ -72,6 +72,7 @@ namespace Server
                 else
                 {
                     cmd = new MySqlCommand($"INSERT INTO users (username, password) VALUES( '{username}', '{password}');", myConnection);
+                    //cmd.ExecuteNonQuery();
                     return "true";
                 }
             }
