@@ -135,6 +135,7 @@ namespace Server
             UnicodeEncoding ByteConverter = new UnicodeEncoding();
             NetworkStream networkStream = this.client.GetStream();
             ProtocolSI protocolSI = new ProtocolSI();
+            Logger logger = new Logger();
             byte[] finalDataBytes = new byte[] { };
             int dataLength = 0;
 
@@ -156,6 +157,7 @@ namespace Server
                         message = $"{DateTime.Now} - [SERVER] Client '{this.clientID}' disconnected";
 
                         Console.WriteLine(message);
+                        logger.WriteLog(message);
 
                         EncryptedMsg = AesEncryption(message);
 
@@ -182,6 +184,7 @@ namespace Server
                             Console.WriteLine(Convert.ToBase64String(finalDataBytes));
                             
                             message = $"{DateTime.Now.ToString("T")} - Client {clientID}: {ASCIIEncoding.ASCII.GetString(finalDataBytes)}";
+                            logger.WriteLog(message);
 
                             Console.WriteLine(message);
 
@@ -220,6 +223,7 @@ namespace Server
 
                             message = $"{DateTime.Now} - [FILE] Client {clientID}: {fileName}";
                             Console.WriteLine(message);
+                            logger.WriteLog(message);
 
                             BinaryFormatter formatter = new BinaryFormatter();
                             MemoryStream ms = new MemoryStream();
